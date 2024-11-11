@@ -456,11 +456,7 @@ const getAvailableDrives = (chassisType) => {
   }, [selectedOptions.processorCount]);
 
 return (
-    <div className="max-w-6xl mx-auto p-8 bg-gray-100">
-      <div className="mb-10 text-center">
-        <img src={logo} alt="Company Logo" className="h-72 mx-auto mb-6" style={{ maxWidth: '100%', height: 'auto' }} />
-      </div>
-
+    <div className="w-full h-full overflow-x-hidden">
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
           <img 
@@ -1233,8 +1229,6 @@ return (
 
 const App = () => <ServerConfigurator />;
 export default App;
-
-
 
 
 
