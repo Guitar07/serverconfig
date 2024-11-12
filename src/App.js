@@ -1,3 +1,4 @@
+// Restored working version with server image
 import React, { useState, useEffect } from 'react';
 import { Server, HardDrive, Cpu, Award } from 'lucide-react';
 import logo from './assets/images/logo.png';
