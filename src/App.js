@@ -1,27 +1,25 @@
-// Restored working version with server image
 import React, { useState, useEffect } from 'react';
 import { Server, HardDrive, Cpu, Award } from 'lucide-react';
 import logo from './assets/images/logo.png';
 import serverImage from './assets/images/server.png';
 import './index.css';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+// Remove overflow: hidden to fix scrolling issue
 const style = document.createElement('style');
 style.textContent = `
   body {
     margin: 0;
     padding: 0;
     background: transparent !important;
-    overflow: hidden !important;
-  }
-  ::-webkit-scrollbar {
-    display: none;
   }
 `;
 document.head.appendChild(style);
 
 const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
-  
+
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
       minimumFractionDigits: 2,
@@ -48,8 +46,10 @@ const ServerConfigurator = () => {
     pcie1: 'none',
     pcie2: 'none',
     powerSupply: '',
+    powerSupplyCount: 1,
     rackmountKit: 'none',
     windowsServer: 'none',
+    windowsServerCount: 1,
     windowsCals: [],
     warranty: '3yr-nbd'
   });
@@ -100,7 +100,7 @@ const ServerConfigurator = () => {
     { id: '128GB', name: '128GB PC4-3200AA-LR DDR4 4DRx4 3200MHz ECC', price: 480.00 }
   ];
 
-const raidControllerOptions = [
+  const raidControllerOptions = [
     { id: 'none', name: 'No Raid Controller for Diskless Chassis', price: 0.00 },
     { id: 'perc-s150', name: 'PERC S150 NVMe Raid Controller', price: 0.00 },
     { id: 'perc-h355i', name: 'PERC H355i Front RAID Controller', price: 155.00 },
@@ -203,7 +203,7 @@ const raidControllerOptions = [
     { id: 'intel-x710-t4-pcie', name: 'Intel X710-T4 10Gb RJ45 Quad Port PCIe NIC', price: 395.00, category: '10Gbps' },
     // Other options including HBA
     { id: 'dell-sas12e', name: 'Dell SAS12/E Direct Attached HBA', price: 140.00, category: 'HBA' },
-    { id: 'dell-perc-h840', name: 'Dell PERC H840 HBA Cars', price: 295.00, category: 'HBA' },
+    { id: 'dell-perc-h840', name: 'Dell PERC H840 HBA Card', price: 295.00, category: 'HBA' },
     { id: 'qlogic-2692', name: 'QLogic 2692 Dual Port FC16 16GB Fibre Channel HBA', price: 245.00, category: 'HBA' },
     { id: 'qlogic-2772', name: 'QLogic 2772 Dual Port FC32 32GB Fibre Channel HBA', price: 795.00, category: 'HBA' },
     { id: 'emulex-lpe36002', name: 'Emulex LPe36002 Dual Port FC64 64GB Fibre Channel HBA', price: 1595.00, category: 'HBA' }
@@ -252,11 +252,10 @@ const raidControllerOptions = [
     { id: '5yr-mission', name: '5Yrs Mission Critical 4Hrs & 24/7 Onsite Warranty', price: 780.00 }
   ];
 
-const basePrice = 1500.00;
+  const basePrice = 1500.00;
 
-
-const getAvailableDrives = (chassisType) => {
-    switch(chassisType) {
+  const getAvailableDrives = (chassisType) => {
+    switch (chassisType) {
       case '4way-3.5':
         return {
           maxDrives: 4,
@@ -299,7 +298,7 @@ const getAvailableDrives = (chassisType) => {
 
   const validateConfiguration = () => {
     const errors = {};
-    
+
     // Required selections
     if (!selectedOptions.chassis) errors.chassis = 'Chassis selection is required';
     if (!selectedOptions.processor) errors.processor = 'Processor selection is required';
@@ -331,7 +330,7 @@ const getAvailableDrives = (chassisType) => {
 
   const calculateSubtotal = () => {
     let total = basePrice;
-    
+
     // Add chassis components
     const bezel = bezelOptions.find(b => b.id === selectedOptions.bezel);
     if (bezel) total += bezel.price;
@@ -392,7 +391,7 @@ const getAvailableDrives = (chassisType) => {
     // Add power supply
     if (selectedOptions.powerSupply) {
       const psu = powerSupplyOptions.find(p => p.id === selectedOptions.powerSupply);
-      if (psu) total += psu.price;
+      if (psu) total += psu.price * selectedOptions.powerSupplyCount;
     }
 
     // Add rackmount kit
@@ -404,13 +403,15 @@ const getAvailableDrives = (chassisType) => {
     // Add Windows Server license
     if (selectedOptions.windowsServer !== 'none') {
       const license = windowsServerOptions.find(w => w.id === selectedOptions.windowsServer);
-      if (license) total += license.price;
+      if (license) total += license.price * selectedOptions.windowsServerCount;
     }
 
     // Add Windows CALs
-    selectedOptions.windowsCals.forEach(calId => {
-      const cal = windowsCalOptions.find(c => c.id === calId);
-      if (cal) total += cal.price;
+    selectedOptions.windowsCals.forEach(calEntry => {
+      const cal = windowsCalOptions.find(c => c.id === calEntry.calId);
+      if (cal) {
+        total += cal.price * calEntry.quantity;
+      }
     });
 
     // Add warranty
@@ -425,7 +426,7 @@ const getAvailableDrives = (chassisType) => {
   const handleOptionChange = (category, value) => {
     setSelectedOptions(prev => {
       const newOptions = { ...prev, [category]: value };
-      
+
       // Handle special cases
       if (category === 'chassis') {
         // Reset drives when chassis changes
@@ -453,7 +454,7 @@ const getAvailableDrives = (chassisType) => {
     e.preventDefault();
     const errors = validateConfiguration();
     setValidationErrors(errors);
-    
+
     if (Object.keys(errors).length === 0) {
       // Proceed with submission
       console.log('Configuration submitted:', selectedOptions);
@@ -471,13 +472,13 @@ const getAvailableDrives = (chassisType) => {
     }
   }, [selectedOptions.processorCount]);
 
-return (
-    <div className="w-full h-full overflow-x-hidden">
+  return (
+    <div className={`w-full h-full ${isDevelopment ? 'overflow-y-auto' : 'overflow-y-auto'}`}>
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
-          <img 
-            src={serverImage} 
-            alt="Dell R650XS Server" 
+          <img
+            src={serverImage}
+            alt="Dell R650XS Server"
             className="w-4/5 h-auto object-contain mix-blend-multiply transition-transform duration-300 hover:scale-105"
           />
           <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-800 to-transparent text-white text-5xl font-normal text-center">
@@ -570,7 +571,6 @@ return (
               </select>
             </div>
 
-            {/* Continue with previous processor, memory, and other sections */}
             {/* Processor Selection */}
             <div className="mb-8">
               <div className="flex gap-4">
@@ -654,9 +654,12 @@ return (
                   </select>
                 </div>
               </div>
+              {validationErrors.memoryCount && (
+                <p className="mt-1 text-red-500 text-sm">{validationErrors.memoryCount}</p>
+              )}
             </div>
 
-{/* RAID Controller */}
+            {/* RAID Controller */}
             <div className="mb-8">
               <label className="block text-lg font-medium mb-2">
                 RAID Controller*
@@ -761,7 +764,7 @@ return (
             {/* Networking Section */}
             <div className="mb-8">
               <h3 className="text-lg font-bold mb-4">Networking Options</h3>
-              
+
               {/* LAN on Motherboard */}
               <div className="mb-4">
                 <label className="block text-lg font-medium mb-2">
@@ -847,6 +850,9 @@ return (
                     </>
                   )}
                 </select>
+                {validationErrors.pcie1 && (
+                  <p className="mt-1 text-red-500 text-sm">{validationErrors.pcie1}</p>
+                )}
               </div>
 
               {/* Second PCIe Expansion Slot */}
@@ -883,24 +889,45 @@ return (
 
             {/* Power Supply */}
             <div className="mb-8">
-              <label className="block text-lg font-medium mb-2">
-                Power Supply Options*
-              </label>
-              <select
-                className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
-                  validationErrors.powerSupply ? 'border-2 border-red-500' : ''
-                }`}
-                value={selectedOptions.powerSupply}
-                onChange={(e) => handleOptionChange('powerSupply', e.target.value)}
-                required
-              >
-                <option value="">Select Power Supply</option>
-                {powerSupplyOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name} (+{formatPrice(option.price)})
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-4">
+                <div className="flex-grow">
+                  <label className="block text-lg font-medium mb-2">
+                    Power Supply Options*
+                  </label>
+                  <select
+                    className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
+                      validationErrors.powerSupply ? 'border-2 border-red-500' : ''
+                    }`}
+                    value={selectedOptions.powerSupply}
+                    onChange={(e) => handleOptionChange('powerSupply', e.target.value)}
+                    required
+                  >
+                    <option value="">Select Power Supply</option>
+                    {powerSupplyOptions.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name} (+{formatPrice(option.price)})
+                      </option>
+                    ))}
+                  </select>
+                  {validationErrors.powerSupply && (
+                    <p className="mt-1 text-red-500 text-sm">{validationErrors.powerSupply}</p>
+                  )}
+                </div>
+                <div className="w-24">
+                  <label className="block text-lg font-medium mb-2">
+                    QTY 1-2
+                  </label>
+                  <select
+                    className="w-full p-2 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors text-center"
+                    value={selectedOptions.powerSupplyCount}
+                    onChange={(e) => handleOptionChange('powerSupplyCount', parseInt(e.target.value))}
+                  >
+                    {[1, 2].map((num) => (
+                      <option key={num} value={num}>{num}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
 
             {/* Rackmount Kit */}
@@ -923,34 +950,52 @@ return (
 
             {/* Windows Server Options */}
             <div className="mb-8">
-              <label className="block text-lg font-medium mb-2">
-                Windows Server Operating System
-              </label>
-              <select
-                className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
-                value={selectedOptions.windowsServer}
-                onChange={(e) => handleOptionChange('windowsServer', e.target.value)}
-              >
-                <option value="none">Select Software Option</option>
-                <optgroup label="Windows Server Standard">
-                  {windowsServerOptions
-                    .filter(option => option.edition === 'standard')
-                    .map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name} (+{formatPrice(option.price)})
-                      </option>
+              <div className="flex gap-4">
+                <div className="flex-grow">
+                  <label className="block text-lg font-medium mb-2">
+                    Windows Server Operating System
+                  </label>
+                  <select
+                    className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
+                    value={selectedOptions.windowsServer}
+                    onChange={(e) => handleOptionChange('windowsServer', e.target.value)}
+                  >
+                    <option value="none">Select Software Option</option>
+                    <optgroup label="Windows Server Standard">
+                      {windowsServerOptions
+                        .filter(option => option.edition === 'standard')
+                        .map((option) => (
+                          <option key={option.id} value={option.id}>
+                            {option.name} (+{formatPrice(option.price)})
+                          </option>
+                        ))}
+                    </optgroup>
+                    <optgroup label="Windows Server Datacenter">
+                      {windowsServerOptions
+                        .filter(option => option.edition === 'datacenter')
+                        .map((option) => (
+                          <option key={option.id} value={option.id}>
+                            {option.name} (+{formatPrice(option.price)})
+                          </option>
+                        ))}
+                    </optgroup>
+                  </select>
+                </div>
+                <div className="w-24">
+                  <label className="block text-lg font-medium mb-2">
+                    QTY 1-60
+                  </label>
+                  <select
+                    className="w-full p-2 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors text-center"
+                    value={selectedOptions.windowsServerCount}
+                    onChange={(e) => handleOptionChange('windowsServerCount', parseInt(e.target.value))}
+                  >
+                    {Array.from({ length: 60 }, (_, i) => i + 1).map((num) => (
+                      <option key={num} value={num}>{num}</option>
                     ))}
-                </optgroup>
-                <optgroup label="Windows Server Datacenter">
-                  {windowsServerOptions
-                    .filter(option => option.edition === 'datacenter')
-                    .map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name} (+{formatPrice(option.price)})
-                      </option>
-                    ))}
-                </optgroup>
-              </select>
+                  </select>
+                </div>
+              </div>
             </div>
 
             {/* Windows CALs */}
@@ -958,21 +1003,63 @@ return (
               <label className="block text-lg font-medium mb-2">
                 Windows Server Client Access Licenses
               </label>
-              <select
-                className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
-                value={selectedOptions.windowsCals}
-                onChange={(e) => {
-                  const options = Array.from(e.target.selectedOptions, option => option.value);
-                  handleOptionChange('windowsCals', options);
+              {selectedOptions.windowsCals.map((calEntry, index) => (
+                <div key={index} className="flex gap-4 mb-4">
+                  <div className="flex-grow">
+                    <select
+                      className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
+                      value={calEntry.calId}
+                      onChange={(e) => {
+                        const newWindowsCals = [...selectedOptions.windowsCals];
+                        newWindowsCals[index].calId = e.target.value;
+                        handleOptionChange('windowsCals', newWindowsCals);
+                      }}
+                    >
+                      <option value="">Select your CAL</option>
+                      {windowsCalOptions.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name} (+{formatPrice(option.price)})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="w-24">
+                    <select
+                      className="w-full p-2 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors text-center"
+                      value={calEntry.quantity}
+                      onChange={(e) => {
+                        const newWindowsCals = [...selectedOptions.windowsCals];
+                        newWindowsCals[index].quantity = parseInt(e.target.value);
+                        handleOptionChange('windowsCals', newWindowsCals);
+                      }}
+                    >
+                      {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
+                        <option key={num} value={num}>{num}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-red-500"
+                    onClick={() => {
+                      const newWindowsCals = selectedOptions.windowsCals.filter((_, i) => i !== index);
+                      handleOptionChange('windowsCals', newWindowsCals);
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="text-blue-500 hover:underline"
+                onClick={() => {
+                  const newWindowsCals = [...selectedOptions.windowsCals, { calId: '', quantity: 1 }];
+                  handleOptionChange('windowsCals', newWindowsCals);
                 }}
-                multiple
               >
-                {windowsCalOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name} (+{formatPrice(option.price)})
-                  </option>
-                ))}
-              </select>
+                Add CAL
+              </button>
             </div>
 
             {/* Warranty Options */}
@@ -991,7 +1078,7 @@ return (
                 {warrantyOptions.map((option) => (
                   <option key={option.id} value={option.id}>
                     {option.name} {option.price > 0 ? `(+${formatPrice(option.price)})` : '(Included)'}
-                </option>
+                  </option>
                 ))}
               </select>
             </div>
@@ -1000,7 +1087,10 @@ return (
 
         {/* Summary Panel */}
         <div className="md:w-1/3">
-          <div className="sticky top-4 bg-gray-50 p-6 rounded-lg shadow-lg">
+          <div
+            className="fixed right-4 top-100 w-[30%] bg-gray-50 p-6 rounded-lg shadow-lg"
+            style={{ maxHeight: 'calc(100vh - 2rem)', overflowY: 'auto' }}
+          >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
             <div className="space-y-4">
               <div>
@@ -1016,7 +1106,7 @@ return (
                   <span className="font-medium">{formatPrice(calculateSubtotal() - basePrice)}</span>
                 </div>
                 <div className="mt-1">
-                  <button 
+                  <button
                     onClick={() => setShowDetails(!showDetails)}
                     className="text-blue-600 hover:underline text-sm"
                   >
@@ -1070,7 +1160,9 @@ return (
                           {processors.find(p => p.id === selectedOptions.processor)?.name} x{selectedOptions.processorCount}
                         </div>
                         <div className="text-right">
-                          {formatPrice((processors.find(p => p.id === selectedOptions.processor)?.price || 0) * selectedOptions.processorCount)}
+                          {formatPrice(
+                            (processors.find(p => p.id === selectedOptions.processor)?.price || 0) * selectedOptions.processorCount
+                          )}
                         </div>
                       </div>
                     )}
@@ -1083,7 +1175,9 @@ return (
                           {memoryOptions.find(m => m.id === selectedOptions.memory)?.name} x{selectedOptions.memoryCount}
                         </div>
                         <div className="text-right">
-                          {formatPrice((memoryOptions.find(m => m.id === selectedOptions.memory)?.price || 0) * selectedOptions.memoryCount)}
+                          {formatPrice(
+                            (memoryOptions.find(m => m.id === selectedOptions.memory)?.price || 0) * selectedOptions.memoryCount
+                          )}
                         </div>
                       </div>
                     )}
@@ -1101,13 +1195,27 @@ return (
                       </div>
                     )}
 
+                    {/* BOSS Controller Details */}
+                    {selectedOptions.bossController !== 'none' && (
+                      <div>
+                        <div className="font-medium">BOSS Controller</div>
+                        <div className="text-gray-600">
+                          {bossControllerOptions.find(b => b.id === selectedOptions.bossController)?.name}
+                        </div>
+                        <div className="text-right">
+                          {formatPrice(bossControllerOptions.find(b => b.id === selectedOptions.bossController)?.price || 0)}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Storage Options */}
                     {Object.entries(selectedOptions.driveQuantities).length > 0 && (
                       <div>
                         <div className="font-medium">Storage Drives</div>
                         {Object.entries(selectedOptions.driveQuantities).map(([driveId, quantity]) => {
-                          const drive = [...systemDrives['3.5inch'], ...systemDrives['2.5inch'], ...systemDrives['nvme']]
-                            .find(d => d.id === driveId);
+                          const drive = [...systemDrives['3.5inch'], ...systemDrives['2.5inch'], ...systemDrives['nvme']].find(
+                            d => d.id === driveId
+                          );
                           if (drive && quantity > 0) {
                             return (
                               <div key={driveId}>
@@ -1167,11 +1275,66 @@ return (
                       <div>
                         <div className="font-medium">Power Supply</div>
                         <div className="text-gray-600">
-                          {powerSupplyOptions.find(p => p.id === selectedOptions.powerSupply)?.name}
+                          {powerSupplyOptions.find(p => p.id === selectedOptions.powerSupply)?.name} x{selectedOptions.powerSupplyCount}
                         </div>
                         <div className="text-right">
-                          {formatPrice(powerSupplyOptions.find(p => p.id === selectedOptions.powerSupply)?.price || 0)}
+                          {formatPrice(
+                            (powerSupplyOptions.find(p => p.id === selectedOptions.powerSupply)?.price || 0) *
+                              selectedOptions.powerSupplyCount
+                          )}
                         </div>
+                      </div>
+                    )}
+
+                    {/* Rackmount Kit Details */}
+                    {selectedOptions.rackmountKit !== 'none' && (
+                      <div>
+                        <div className="font-medium">Rackmount Kit</div>
+                        <div className="text-gray-600">
+                          {rackmountKitOptions.find(r => r.id === selectedOptions.rackmountKit)?.name}
+                        </div>
+                        <div className="text-right">
+                          {formatPrice(rackmountKitOptions.find(r => r.id === selectedOptions.rackmountKit)?.price || 0)}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Windows Server Details */}
+                    {selectedOptions.windowsServer !== 'none' && (
+                      <div>
+                        <div className="font-medium">Windows Server License</div>
+                        <div className="text-gray-600">
+                          {windowsServerOptions.find(w => w.id === selectedOptions.windowsServer)?.name} x{selectedOptions.windowsServerCount}
+                        </div>
+                        <div className="text-right">
+                          {formatPrice(
+                            (windowsServerOptions.find(w => w.id === selectedOptions.windowsServer)?.price || 0) *
+                              selectedOptions.windowsServerCount
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Windows CALs Details */}
+                    {selectedOptions.windowsCals.length > 0 && (
+                      <div>
+                        <div className="font-medium">Windows CALs</div>
+                        {selectedOptions.windowsCals.map((calEntry, index) => {
+                          const cal = windowsCalOptions.find(c => c.id === calEntry.calId);
+                          if (cal) {
+                            return (
+                              <div key={index}>
+                                <div className="text-gray-600">
+                                  {cal.name} x{calEntry.quantity}
+                                </div>
+                                <div className="text-right">
+                                  {formatPrice(cal.price * calEntry.quantity)}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })}
                       </div>
                     )}
 
@@ -1234,7 +1397,7 @@ return (
                 className="w-full py-3 rounded-md font-medium text-white transition-colors duration-300 bg-[#1881AE] hover:bg-[#157394]"
               >
                 Add to Cart
-           </button>
+              </button>
             </div>
           </div>
         </div>
