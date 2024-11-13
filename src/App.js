@@ -100,17 +100,18 @@ const ServerConfigurator = () => {
   ];
 
   const raidControllerOptions = [
-    { id: 'none', name: 'No Raid Controller for Diskless Chassis', price: 0.0 },
-    { id: 'perc-s150', name: 'PERC S150 NVMe Raid Controller', price: 0.0 },
+    { id: 'none', name: 'No RAID Controller for Diskless Chassis', price: 0.0 },
+    { id: 'perc-s150', name: 'PERC S150 NVMe RAID Controller', price: 0.0 },
     { id: 'perc-h355i', name: 'PERC H355i Front RAID Controller', price: 155.0 },
     { id: 'perc-h355', name: 'PERC H355 Front RAID Controller', price: 200.0 },
     { id: 'perc-h755', name: 'PERC H755 Front RAID Controller with 8GB Cache', price: 350.0 },
   ];
 
+
   const bossControllerOptions = [
-    { id: 'none', name: 'No Boss Controller', price: 0.0 },
-    { id: 'boss-240', name: 'Dell Boss Controller with 2 x 240GB M.2. SATA SSD', price: 130.0 },
-    { id: 'boss-480', name: 'Dell Boss Controller with 2 x 480GB M.2. SATA SSD', price: 220.0 },
+    { id: 'none', name: 'No BOSS Controller', price: 0.0 },
+    { id: 'boss-240', name: 'Dell BOSS Controller with 2 x 240GB M.2. SATA SSD', price: 130.0 },
+    { id: 'boss-480', name: 'Dell BOSS Controller with 2 x 480GB M.2. SATA SSD', price: 220.0 },
   ];
 
   const systemDrives = {
@@ -549,6 +550,15 @@ const ServerConfigurator = () => {
       if (pcie2) total += pcie2.price;
     }
 
+  // Add IDRAC price - ADD THIS NEW BLOCK HERE
+  if (selectedOptions.idrac && selectedOptions.idrac !== 'express') {
+    const selectedIdrac = idracOptions.find(
+      (option) => option.id === selectedOptions.idrac
+    );
+    if (selectedIdrac) {
+      total += selectedIdrac.price;
+    }
+  }
     // Add power supply
     if (selectedOptions.powerSupply) {
       const psu = powerSupplyOptions.find((p) => p.id === selectedOptions.powerSupply);
