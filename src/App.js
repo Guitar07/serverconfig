@@ -8,24 +8,25 @@ const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    // Adjust styles to fix scrolling issue in iframe
-    const style = document.createElement('style');
-    style.textContent = `
-      html, body, #root {
-        margin: 0;
-        padding: 0;
-        background: transparent !important;
-        overflow: auto !important;
-        height: 100% !important;
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Clean up by removing the style element when the component unmounts
-    return () => {
-      document.head.removeChild(style);
+    const handleResize = () => {
+        window.parent.postMessage(
+            { height: document.documentElement.scrollHeight },
+            "https://www.serversource.co.uk/pages/R650xs"
+        );
     };
-  }, []);
+
+    // Initial height calculation
+    handleResize();
+
+    // Recalculate height on window resize or content change
+    window.addEventListener("resize", handleResize);
+
+    // Clean up the event listener on component unmount
+    return () => {
+        window.removeEventListener("resize", handleResize);
+    };
+}, []);
+
 
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
