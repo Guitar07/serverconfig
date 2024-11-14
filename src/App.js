@@ -3,33 +3,31 @@ import { Server, HardDrive, Cpu, Award } from 'lucide-react';
 import serverImage from './assets/images/server.png';
 import './index.css';
 
-
 const ServerConfigurator = () => {
-  const [showDetails, setShowDetails] = useState(false);
-
   useEffect(() => {
     const handleResize = () => {
-        window.parent.postMessage(
-            { height: document.documentElement.scrollHeight },
-            "https://www.serversource.co.uk/pages/R650xs"
-        );
+      window.parent.postMessage(
+        { height: document.documentElement.scrollHeight },
+        "https://www.serversource.co.uk/pages/R650xs"
+      );
     };
 
     // Initial height calculation
     handleResize();
 
-    // Recalculate height on window resize or content change
+    // Recalculate height on window resize
     window.addEventListener("resize", handleResize);
 
-    // Clean up the event listener on component unmount
+    // Add MutationObserver
+    const observer = new MutationObserver(handleResize);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Clean up
     return () => {
-        window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
     };
-}, []);
-
-
-
-
+  }, []);
 
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
@@ -688,7 +686,7 @@ const ServerConfigurator = () => {
 
   // Render the component
   return (
-    <div className="w-full min-h-screen pb-20">
+    <div className="w-full">
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -1336,18 +1334,8 @@ const ServerConfigurator = () => {
 
         {/* Right Panel - Summary */}
         <div className="md:w-1/3">
-          <div
-            className="bg-gray-50 p-6 rounded-lg shadow-lg summary-card"
-            style={{ 
-              position: 'fixed',  // Changed from sticky to fixed
-              top: '20px',
-              right: '20px',     // Added right positioning
-              width: 'calc(33.333% - 40px)',  // Roughly 1/3 of the space minus margins
-              zIndex: 10,
-              maxHeight: 'calc(100vh - 40px)',
-              overflowY: 'auto'
-            }}
-          >
+  <div className="sticky top-4 bg-gray-50 p-6 rounded-lg shadow-lg">
+          
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
             <div className="space-y-4">
               <div className="flex justify-between">
@@ -1639,10 +1627,9 @@ const ServerConfigurator = () => {
     </div>
     </div>
   );
-};
+}
 
-const App = () => <ServerConfigurator />;
-export default App;
+export default ServerConfigurator;
 
 
 
