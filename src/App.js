@@ -29,13 +29,20 @@ const ServerConfigurator = () => {
 
 useEffect(() => {
   const handleScroll = () => {
-    const container = document.querySelector('.configurator-container');
     const summaryCard = document.querySelector('.summary-card');
-    if (container && summaryCard) {
-      const containerRect = container.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const topPosition = Math.max(20, Math.min(scrollTop - containerRect.top, containerRect.height - summaryCard.offsetHeight - 20));
-      summaryCard.style.transform = `translateY(${topPosition}px)`;
+    const mainContent = document.querySelector('.main-content');
+    
+    if (summaryCard && mainContent) {
+      const mainContentTop = mainContent.offsetTop;
+      const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+      const maxScroll = mainContent.offsetHeight - summaryCard.offsetHeight;
+      
+      if (scrollPosition > mainContentTop) {
+        const newPosition = Math.min(scrollPosition - mainContentTop, maxScroll);
+        summaryCard.style.transform = `translateY(${newPosition}px)`;
+      } else {
+        summaryCard.style.transform = 'translateY(0)';
+      }
     }
   };
 
@@ -744,7 +751,7 @@ useEffect(() => {
       </div>
 
       {/* Main Content - modify the container structure */}
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-8 main-content">
         {/* Left Panel - Configuration Form */}
         <div className="md:w-2/3 relative">
           <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
