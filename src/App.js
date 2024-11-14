@@ -1331,18 +1331,19 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3">
+        <div className="md:w-1/3" style={{ position: 'relative' }}>  {/* Added relative positioning */}
           <div
             style={{ 
-              position: 'sticky',
+              position: 'fixed',
               top: '20px',
+              right: '20px',
+              width: 'inherit',
               backgroundColor: '#f9fafb',
               padding: '1.5rem',
               borderRadius: '0.5rem',
               boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
               maxHeight: 'calc(100vh - 40px)',
-              overflowY: 'auto',
-              marginBottom: '2rem'
+              overflowY: 'auto'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
