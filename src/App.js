@@ -4,7 +4,8 @@ import serverImage from './assets/images/server.png';
 import './index.css';
 
 const ServerConfigurator = () => {
-  const [showDetails, setShowDetails] = useState(false); 
+  const [showDetails, setShowDetails] = useState(false);
+  
   useEffect(() => {
     const handleResize = () => {
       window.parent.postMessage(
@@ -732,7 +733,7 @@ const ServerConfigurator = () => {
 
       {/* Main Content - modify the container structure */}
       <div className="relative">
-    <div className="flex flex-col md:flex-row gap-8 main-content">
+      <div className="flex flex-col md:flex-row gap-8 main-content items-start">
         {/* Left Panel - Configuration Form */}
         <div className="md:w-2/3 relative">
           <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
@@ -1334,7 +1335,7 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3">
+        <div className="md:w-1/3 self start">
   <div className="sticky top-4 bg-gray-50 p-6 rounded-lg shadow-lg">
           
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
@@ -1630,7 +1631,9 @@ const ServerConfigurator = () => {
   );
 }
 
-export default ServerConfigurator;
+
+const App = () => <ServerConfigurator />;
+export default App;
 
 
 
