@@ -3,21 +3,29 @@ import { Server, HardDrive, Cpu, Award } from 'lucide-react';
 import serverImage from './assets/images/server.png';
 import './index.css';
 
-// Adjust styles to fix scrolling issue in iframe
-const style = document.createElement('style');
-style.textContent = `
-  html, body, #root {
-    margin: 0;
-    padding: 0;
-    background: transparent !important;
-    overflow: auto !important;
-    height: 100% !important;
-  }
-`;
-document.head.appendChild(style);
 
 const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
+
+  useEffect(() => {
+    // Adjust styles to fix scrolling issue in iframe
+    const style = document.createElement('style');
+    style.textContent = `
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        background: transparent !important;
+        overflow: auto !important;
+        height: 100% !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Clean up by removing the style element when the component unmounts
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
