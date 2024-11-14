@@ -27,28 +27,9 @@ const ServerConfigurator = () => {
     };
 }, []);
 
-useEffect(() => {
-  const handleScroll = () => {
-    const summaryCard = document.querySelector('.summary-card');
-    const mainContent = document.querySelector('.main-content');
-    
-    if (summaryCard && mainContent) {
-      const mainContentTop = mainContent.offsetTop;
-      const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-      const maxScroll = mainContent.offsetHeight - summaryCard.offsetHeight;
-      
-      if (scrollPosition > mainContentTop) {
-        const newPosition = Math.min(scrollPosition - mainContentTop, maxScroll);
-        summaryCard.style.transform = `translateY(${newPosition}px)`;
-      } else {
-        summaryCard.style.transform = 'translateY(0)';
-      }
-    }
-  };
 
-  window.addEventListener('scroll', handleScroll);
-  return () => window.removeEventListener('scroll', handleScroll);
-}, []);
+
+
 
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
@@ -707,7 +688,7 @@ useEffect(() => {
 
   // Render the component
   return (
-    <div className="w-full min-h-screen pb-20 overflow-x-hidden configurator-container"> 
+    <div className="w-full min-h-screen pb-20">
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -751,7 +732,8 @@ useEffect(() => {
       </div>
 
       {/* Main Content - modify the container structure */}
-      <div className="flex flex-col md:flex-row gap-8 main-content">
+      <div className="relative">
+    <div className="flex flex-col md:flex-row gap-8 main-content">
         {/* Left Panel - Configuration Form */}
         <div className="md:w-2/3 relative">
           <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
@@ -1353,12 +1335,16 @@ useEffect(() => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3">
+        <div className="md:w-1/3 relative">  {/* Added relative here */}
           <div
             className="bg-gray-50 p-6 rounded-lg shadow-lg summary-card"
             style={{ 
-              position: 'relative',
-              transition: 'transform 0.1s ease-out'
+              position: 'sticky',
+              top: '20px',
+              zIndex: 10,
+              height: 'fit-content',  /* Added this */
+              maxHeight: 'calc(100vh - 40px)',  /* Added this */
+              overflowY: 'auto'  /* Added this */
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
@@ -1649,6 +1635,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
