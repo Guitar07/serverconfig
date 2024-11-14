@@ -729,9 +729,9 @@ const ServerConfigurator = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-8 relative">
         {/* Left Panel */}
-        <div className="md:w-2/3 bg-white p-6 rounded-lg shadow-lg">
+        <div className="md:w-2/3">
           <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
           <form onSubmit={handleSubmit}>
             {/* Chassis Selection */}
@@ -1333,13 +1333,16 @@ const ServerConfigurator = () => {
         {/* Right Panel - Summary */}
         <div className="md:w-1/3">
           <div
-            className="bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
               position: 'sticky',
               top: '20px',
-              maxHeight: '90vh',
+              backgroundColor: '#f9fafb',
+              padding: '1.5rem',
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              maxHeight: 'calc(100vh - 40px)',
               overflowY: 'auto',
-              zIndex: 10
+              marginBottom: '2rem'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
