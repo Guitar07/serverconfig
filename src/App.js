@@ -27,6 +27,22 @@ const ServerConfigurator = () => {
     };
 }, []);
 
+useEffect(() => {
+  const handleScroll = () => {
+    const container = document.querySelector('.configurator-container');
+    const summaryCard = document.querySelector('.summary-card');
+    if (container && summaryCard) {
+      const containerRect = container.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const topPosition = Math.max(20, Math.min(scrollTop - containerRect.top, containerRect.height - summaryCard.offsetHeight - 20));
+      summaryCard.style.transform = `translateY(${topPosition}px)`;
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  return () => window.removeEventListener('scroll', handleScroll);
+}, []);
+
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
       minimumFractionDigits: 2,
@@ -684,7 +700,7 @@ const ServerConfigurator = () => {
 
   // Render the component
   return (
-    <div className="w-full min-h-screen pb-20 overflow-x-hidden" style={{ overflow: 'hidden' }}>
+    <div className="w-full min-h-screen pb-20 overflow-x-hidden configurator-container"> 
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -1330,15 +1346,12 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3" style={{ position: 'relative' }}>
+        <div className="md:w-1/3">
           <div
-            className="bg-gray-50 p-6 rounded-lg shadow-lg"
+            className="bg-gray-50 p-6 rounded-lg shadow-lg summary-card"
             style={{ 
-              position: '-webkit-sticky',
-              position: 'sticky',
-              top: '20px',
-              zIndex: 10,
-              marginBottom: '2rem'
+              position: 'relative',
+              transition: 'transform 0.1s ease-out'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
