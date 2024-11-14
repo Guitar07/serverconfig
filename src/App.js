@@ -1331,17 +1331,18 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3">
+        <div className="md:w-1/3" style={{ overflow: 'visible' }}>
           <div
             className="bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
-              position: '-webkit-sticky',
               position: 'sticky',
+              position: '-webkit-sticky',
               top: '20px',
               height: 'auto',
               maxHeight: 'calc(100vh - 40px)',
               overflowY: 'auto',
-              zIndex: 1
+              zIndex: 1,
+              transform: 'translateZ(0)'  // Force hardware acceleration
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
