@@ -685,7 +685,7 @@ const ServerConfigurator = () => {
 
   // Render the component
   return (
-    <div className="w-full min-h-screen pb-20 overflow-x-hidden">
+    <div className="w-full min-h-screen pb-20 overflow-x-hidden" style={{ overflow: 'hidden' }}>
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -729,7 +729,7 @@ const ServerConfigurator = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row gap-8 relative">
+      <div className="flex flex-col md:flex-row gap-8 relative" style={{ height: '100%', overflow: 'auto' }}>
         {/* Left Panel */}
         <div className="md:w-2/3">
           <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
@@ -1331,18 +1331,14 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3" style={{ overflow: 'visible' }}>
+        <div className="md:w-1/3">
           <div
             className="bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
               position: 'sticky',
-              position: '-webkit-sticky',
-              top: '20px',
-              height: 'auto',
-              maxHeight: 'calc(100vh - 40px)',
-              overflowY: 'auto',
-              zIndex: 1,
-              transform: 'translateZ(0)'  // Force hardware acceleration
+              top: 0,
+              maxHeight: '100vh',
+              overflowY: 'auto'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
