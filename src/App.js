@@ -1333,11 +1333,13 @@ const ServerConfigurator = () => {
         {/* Right Panel - Summary */}
         <div className="md:w-1/3">
           <div
-            className="sticky top-4 bg-gray-50 p-6 rounded-lg shadow-lg overflow-y-auto"
+            className="bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
-              position: '-webkit-sticky',
-              maxHeight: 'calc(100vh - 2rem)',
-              marginBottom: '2rem'
+              position: 'sticky',
+              top: '20px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              zIndex: 10
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
