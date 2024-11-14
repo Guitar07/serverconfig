@@ -685,7 +685,7 @@ const ServerConfigurator = () => {
 
   // Render the component
   return (
-    <div className="w-full h-full overflow-auto">
+    <div className="w-full">
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -1333,8 +1333,8 @@ const ServerConfigurator = () => {
         {/* Right Panel - Summary */}
         <div className="md:w-1/3">
           <div
-            className="sticky top-4 bg-gray-50 p-6 rounded-lg shadow-lg"
-            style={{ maxHeight: 'calc(100vh - 2rem)', overflowY: 'auto' }}
+             className="sticky top-4 bg-gray-50 p-6 rounded-lg shadow-lg"
+             
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
             <div className="space-y-4">
