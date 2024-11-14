@@ -1336,9 +1336,11 @@ const ServerConfigurator = () => {
             className="bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
               position: 'sticky',
-              top: 0,
-              maxHeight: '100vh',
-              overflowY: 'auto'
+              top: '20px',
+              maxHeight: 'calc(100vh - 40px)',
+              overflowY: 'auto',
+              willChange: 'transform',
+              transform: 'translate3d(0,0,0)'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
