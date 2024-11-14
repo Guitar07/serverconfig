@@ -1335,16 +1335,17 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3 relative">  {/* Added relative here */}
+        <div className="md:w-1/3">
           <div
             className="bg-gray-50 p-6 rounded-lg shadow-lg summary-card"
             style={{ 
-              position: 'sticky',
+              position: 'fixed',  // Changed from sticky to fixed
               top: '20px',
+              right: '20px',     // Added right positioning
+              width: 'calc(33.333% - 40px)',  // Roughly 1/3 of the space minus margins
               zIndex: 10,
-              height: 'fit-content',  /* Added this */
-              maxHeight: 'calc(100vh - 40px)',  /* Added this */
-              overflowY: 'auto'  /* Added this */
+              maxHeight: 'calc(100vh - 40px)',
+              overflowY: 'auto'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
