@@ -27,6 +27,20 @@ const ServerConfigurator = () => {
     };
 }, []);
 
+  // Add this near your other useEffect hooks
+  useEffect(() => {
+    const handleScroll = () => {
+      const summaryCard = document.querySelector('.summary-card');
+      if (summaryCard) {
+        const scrollPosition = window.scrollY;
+        const offset = Math.min(scrollPosition, 20);
+        summaryCard.style.transform = `translateY(${offset}px)`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
@@ -1333,14 +1347,13 @@ const ServerConfigurator = () => {
         {/* Right Panel - Summary */}
         <div className="md:w-1/3">
           <div
-            className="bg-gray-50 p-6 rounded-lg shadow-lg"
+            className="bg-gray-50 p-6 rounded-lg shadow-lg summary-card"
             style={{ 
               position: 'sticky',
               top: '20px',
               maxHeight: 'calc(100vh - 40px)',
               overflowY: 'auto',
-              willChange: 'transform',
-              transform: 'translate3d(0,0,0)'
+              transition: 'transform 0.2s ease-out'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
