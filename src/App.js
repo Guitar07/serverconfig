@@ -4,6 +4,7 @@ import serverImage from './assets/images/server.png';
 import './index.css';
 
 const ServerConfigurator = () => {
+  const [showDetails, setShowDetails] = useState(false); 
   useEffect(() => {
     const handleResize = () => {
       window.parent.postMessage(
