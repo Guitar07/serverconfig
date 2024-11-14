@@ -27,21 +27,6 @@ const ServerConfigurator = () => {
     };
 }, []);
 
-  // Add this near your other useEffect hooks
-  useEffect(() => {
-    const handleScroll = () => {
-      const summaryCard = document.querySelector('.summary-card');
-      if (summaryCard) {
-        const scrollPosition = window.scrollY;
-        const offset = Math.min(scrollPosition, 20);
-        summaryCard.style.transform = `translateY(${offset}px)`;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
       minimumFractionDigits: 2,
@@ -742,10 +727,10 @@ const ServerConfigurator = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col md:flex-row gap-8 relative" style={{ height: '100%', overflow: 'auto' }}>
-        {/* Left Panel */}
-        <div className="md:w-2/3">
+      {/* Main Content - modify the container structure */}
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Left Panel - Configuration Form */}
+        <div className="md:w-2/3 relative">
           <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
           <form onSubmit={handleSubmit}>
             {/* Chassis Selection */}
@@ -1347,13 +1332,17 @@ const ServerConfigurator = () => {
         {/* Right Panel - Summary */}
         <div className="md:w-1/3">
           <div
-            className="bg-gray-50 p-6 rounded-lg shadow-lg summary-card"
             style={{ 
-              position: 'sticky',
-              top: '20px',
-              maxHeight: 'calc(100vh - 40px)',
-              overflowY: 'auto',
-              transition: 'transform 0.2s ease-out'
+              position: 'fixed',
+              right: '5%',
+              top: '100px',
+              width: 'calc(30% - 2rem)',
+              backgroundColor: '#f9fafb',
+              padding: '1.5rem',
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              maxHeight: '80vh',
+              overflowY: 'auto'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
