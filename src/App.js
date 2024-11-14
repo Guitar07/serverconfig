@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Server, HardDrive, Cpu, Award } from 'lucide-react';
-import logo from './assets/images/logo.png';
 import serverImage from './assets/images/server.png';
 import './index.css';
 
@@ -406,7 +405,8 @@ const ServerConfigurator = () => {
 
   const basePrice = 1500.0;
 
-  const getAvailableDrives = (chassisType) => {
+  // Wrap getAvailableDrives in useCallback
+  const getAvailableDrives = useCallback((chassisType) => {
     switch (chassisType) {
       case '4way-3.5':
         return {
@@ -429,7 +429,7 @@ const ServerConfigurator = () => {
           drives: [],
         };
     }
-  };
+  }, []);
 
   const getValidMemoryQuantities = (cpuCount) => {
     if (cpuCount === 1) {
@@ -594,7 +594,8 @@ const ServerConfigurator = () => {
     return total * quantity;
   };
 
-  const handleOptionChange = (category, value) => {
+  // Wrap handleOptionChange in useCallback
+  const handleOptionChange = useCallback((category, value) => {
     setSelectedOptions((prev) => {
       const newOptions = { ...prev, [category]: value };
 
@@ -619,7 +620,7 @@ const ServerConfigurator = () => {
 
       return newOptions;
     });
-  };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -641,17 +642,7 @@ const ServerConfigurator = () => {
     } else if (selectedOptions.processorCount === 2 && selectedOptions.memoryCount < 2) {
       handleOptionChange('memoryCount', 2);
     }
-  }, [selectedOptions.processorCount]);
-
-  // Function to calculate remaining drive bays
-  const calculateRemainingDriveBays = () => {
-    const availableDrives = getAvailableDrives(selectedOptions.chassis);
-    const totalSelectedDrives = Object.values(selectedOptions.driveQuantities).reduce(
-      (a, b) => a + b,
-      0
-    );
-    return availableDrives.maxDrives - totalSelectedDrives;
-  };
+  }, [selectedOptions.processorCount, selectedOptions.memoryCount, handleOptionChange]);
 
   // State to store maximum quantities for each drive
   const [maxDriveQuantities, setMaxDriveQuantities] = useState({});
@@ -671,7 +662,7 @@ const ServerConfigurator = () => {
     });
 
     setMaxDriveQuantities(newMaxQuantities);
-  }, [selectedOptions.driveQuantities, selectedOptions.chassis]);
+  }, [selectedOptions.driveQuantities, selectedOptions.chassis, getAvailableDrives]);
 
   // Function to calculate the VAT
   const calculateVAT = (subtotal) => {
