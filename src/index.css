@@ -11,22 +11,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
 html, 
 body, 
 #root {
   margin: 0;
   padding: 0;
+  height: 100%;
   background: transparent !important;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .App {
-  overflow-y: auto;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
 }

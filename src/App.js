@@ -1,94 +1,36 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Server, HardDrive, Cpu, Award } from 'lucide-react';
 import serverImage from './assets/images/server.png';
-import './index.css';
 
-const mainContentStyles = {
-  overflowY: 'auto',
-  maxHeight: '100vh',
-  scrollbarWidth: 'none', /* Firefox */
-  msOverflowStyle: 'none', /* IE and Edge */
-  '&::-webkit-scrollbar': {
-    display: 'none' /* Chrome, Safari, Edge */
-  }
-};
+
 
 const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      // Get the actual content height
-      const contentHeight = document.documentElement.scrollHeight;
-      // Add some padding to ensure we have room for scrolling
-      const heightWithPadding = contentHeight + 100; // Add 100px padding
-
-      window.parent.postMessage(
-        { height: heightWithPadding },
-        "https://www.serversource.co.uk/pages/R650xs"
-      );
-    };
-
-    // Initial height calculation
-    handleResize();
-
-    // Recalculate height on window resize
-    window.addEventListener("resize", handleResize);
-
-    // Add MutationObserver
-    const observer = new MutationObserver(handleResize);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Clean up
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleParentScroll = () => {
-      // Add safety checks
-      if (!window.parent || !window.frameElement) return;
-      
-      const summaryCard = document.querySelector('.summary-card');
-      if (!summaryCard) return;
-
-      try {
-        // Get scroll position from parent window
-        const parentScrollY = window.parent.scrollY || window.parent.pageYOffset;
-        const iframeRect = window.frameElement.getBoundingClientRect();
-        const topOffset = iframeRect.top;
-        
-        // Calculate position relative to iframe
-        const relativeScroll = Math.max(0, parentScrollY - topOffset);
-        const maxScroll = document.documentElement.scrollHeight - summaryCard.offsetHeight - 40;
-
-        // Apply transform based on parent scroll
-        if (relativeScroll > 0) {
-          const translateY = Math.min(relativeScroll, maxScroll);
-          summaryCard.style.transform = `translateY(${translateY}px)`;
-        } else {
-          summaryCard.style.transform = 'translateY(0)';
-        }
-      } catch (error) {
-        console.error('Scroll handling error:', error);
-      }
-    };
-
-    // Only add listener if we're in an iframe
-    if (window.parent !== window) {
-      window.parent.addEventListener('scroll', handleParentScroll);
-      return () => window.parent.removeEventListener('scroll', handleParentScroll);
-    }
-}, []);
-
+ 
 const formatPrice = (price) => {
   return `£${price.toLocaleString('en-GB', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
 };
+
+useEffect(() => {
+  const handleResize = () => {
+    const contentHeight = document.documentElement.scrollHeight;
+    window.parent.postMessage(
+      { height: contentHeight },
+      "*"  // Allow any origin for testing
+    );
+  };
+
+  handleResize();
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
 
   // State to manage selected options
   const [selectedOptions, setSelectedOptions] = useState({
