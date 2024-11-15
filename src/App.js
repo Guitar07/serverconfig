@@ -31,41 +31,49 @@ const ServerConfigurator = () => {
     };
   }, []);
 
-  // Add this new useEffect after your existing one
   useEffect(() => {
     const handleParentScroll = () => {
+      // Add safety checks
+      if (!window.parent || !window.frameElement) return;
+      
       const summaryCard = document.querySelector('.summary-card');
       if (!summaryCard) return;
 
-      // Get scroll position from parent window
-      const parentScrollY = window.parent.scrollY || window.parent.pageYOffset;
-      const iframeRect = window.frameElement.getBoundingClientRect();
-      const topOffset = iframeRect.top;
-      
-      // Calculate position relative to iframe
-      const relativeScroll = Math.max(0, parentScrollY - topOffset);
-      const maxScroll = document.documentElement.scrollHeight - summaryCard.offsetHeight - 40;
+      try {
+        // Get scroll position from parent window
+        const parentScrollY = window.parent.scrollY || window.parent.pageYOffset;
+        const iframeRect = window.frameElement.getBoundingClientRect();
+        const topOffset = iframeRect.top;
+        
+        // Calculate position relative to iframe
+        const relativeScroll = Math.max(0, parentScrollY - topOffset);
+        const maxScroll = document.documentElement.scrollHeight - summaryCard.offsetHeight - 40;
 
-      // Apply transform based on parent scroll
-      if (relativeScroll > 0) {
-        const translateY = Math.min(relativeScroll, maxScroll);
-        summaryCard.style.transform = `translateY(${translateY}px)`;
-      } else {
-        summaryCard.style.transform = 'translateY(0)';
+        // Apply transform based on parent scroll
+        if (relativeScroll > 0) {
+          const translateY = Math.min(relativeScroll, maxScroll);
+          summaryCard.style.transform = `translateY(${translateY}px)`;
+        } else {
+          summaryCard.style.transform = 'translateY(0)';
+        }
+      } catch (error) {
+        console.error('Scroll handling error:', error);
       }
     };
 
-    // Listen for scroll events from parent window
-    window.parent.addEventListener('scroll', handleParentScroll);
-    return () => window.parent.removeEventListener('scroll', handleParentScroll);
-  }, []);
+    // Only add listener if we're in an iframe
+    if (window.parent !== window) {
+      window.parent.addEventListener('scroll', handleParentScroll);
+      return () => window.parent.removeEventListener('scroll', handleParentScroll);
+    }
+}, []);
 
-  const formatPrice = (price) => {
-    return `£${price.toLocaleString('en-GB', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
+const formatPrice = (price) => {
+  return `£${price.toLocaleString('en-GB', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
 
   // State to manage selected options
   const [selectedOptions, setSelectedOptions] = useState({
