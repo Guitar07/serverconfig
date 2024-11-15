@@ -1328,12 +1328,14 @@ useEffect(() => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:col-span-1" style={{ position: 'relative' }}>
+        <div className="md:col-span-1">
           <div 
             className="summary-card bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
               position: 'sticky',
               top: '20px',
+              maxHeight: 'calc(100vh - 40px)',
+              overflowY: 'auto'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
