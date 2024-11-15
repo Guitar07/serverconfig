@@ -15,10 +15,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-html, body {
-  overflow: hidden;
+
+html, 
+body, 
+#root {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  overflow-y: auto;
 }
 
 .App {
-  overflow: hidden;
+  overflow-y: auto;
+  height: 100%;
+  width: 100%;
 }

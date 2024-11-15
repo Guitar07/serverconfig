@@ -3,13 +3,28 @@ import { Server, HardDrive, Cpu, Award } from 'lucide-react';
 import serverImage from './assets/images/server.png';
 import './index.css';
 
+const mainContentStyles = {
+  overflowY: 'auto',
+  maxHeight: '100vh',
+  scrollbarWidth: 'none', /* Firefox */
+  msOverflowStyle: 'none', /* IE and Edge */
+  '&::-webkit-scrollbar': {
+    display: 'none' /* Chrome, Safari, Edge */
+  }
+};
+
 const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
+      // Get the actual content height
+      const contentHeight = document.documentElement.scrollHeight;
+      // Add some padding to ensure we have room for scrolling
+      const heightWithPadding = contentHeight + 100; // Add 100px padding
+
       window.parent.postMessage(
-        { height: document.documentElement.scrollHeight },
+        { height: heightWithPadding },
         "https://www.serversource.co.uk/pages/R650xs"
       );
     };
@@ -725,7 +740,7 @@ const formatPrice = (price) => {
 
   // Render the component
   return (
-    <div className="w-full">
+    <div className="w-full h-screen overflow-y-auto">  {/* Added h-screen and overflow-y-auto */}
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -1371,12 +1386,12 @@ const formatPrice = (price) => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:col-span-1">  {/* Takes up 1 column */}
+        <div className="md:col-span-1" style={{ position: 'relative' }}>
           <div 
             className="summary-card bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
-              position: 'relative',
-              transition: 'transform 0.1s ease-out'
+              position: 'sticky',
+              top: '20px',
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
