@@ -16,12 +16,21 @@ body,
 #root {
   margin: 0;
   padding: 0;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   background: transparent !important;
-  overflow-y: visible;
+  overflow-y: auto !important;
 }
 
 .App {
   min-height: 100%;
   width: 100%;
+}
+
+.summary-card {
+  position: sticky;
+  top: 20px;
+  z-index: 10;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
