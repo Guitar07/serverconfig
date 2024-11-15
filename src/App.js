@@ -31,6 +31,35 @@ const ServerConfigurator = () => {
     };
   }, []);
 
+  // Add this new useEffect after your existing one
+  useEffect(() => {
+    const handleParentScroll = () => {
+      const summaryCard = document.querySelector('.summary-card');
+      if (!summaryCard) return;
+
+      // Get scroll position from parent window
+      const parentScrollY = window.parent.scrollY || window.parent.pageYOffset;
+      const iframeRect = window.frameElement.getBoundingClientRect();
+      const topOffset = iframeRect.top;
+      
+      // Calculate position relative to iframe
+      const relativeScroll = Math.max(0, parentScrollY - topOffset);
+      const maxScroll = document.documentElement.scrollHeight - summaryCard.offsetHeight - 40;
+
+      // Apply transform based on parent scroll
+      if (relativeScroll > 0) {
+        const translateY = Math.min(relativeScroll, maxScroll);
+        summaryCard.style.transform = `translateY(${translateY}px)`;
+      } else {
+        summaryCard.style.transform = 'translateY(0)';
+      }
+    };
+
+    // Listen for scroll events from parent window
+    window.parent.addEventListener('scroll', handleParentScroll);
+    return () => window.parent.removeEventListener('scroll', handleParentScroll);
+  }, []);
+
   const formatPrice = (price) => {
     return `£${price.toLocaleString('en-GB', {
       minimumFractionDigits: 2,
@@ -1336,12 +1365,10 @@ const ServerConfigurator = () => {
         {/* Right Panel - Summary */}
         <div className="md:col-span-1">  {/* Takes up 1 column */}
           <div 
-            className="bg-gray-50 p-6 rounded-lg shadow-lg"
-            style={{
-              position: 'sticky',
-              top: '1rem',
-              maxHeight: 'calc(100vh - 2rem)',
-              overflowY: 'auto'
+            className="summary-card bg-gray-50 p-6 rounded-lg shadow-lg"
+            style={{ 
+              position: 'relative',
+              transition: 'transform 0.1s ease-out'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
