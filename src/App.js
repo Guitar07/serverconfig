@@ -682,7 +682,7 @@ useEffect(() => {
 
   // Render the component
   return (
-    <div className="w-full h-screen overflow-y-auto">  {/* Added h-screen and overflow-y-auto */}
+    <div className="w-full">
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
