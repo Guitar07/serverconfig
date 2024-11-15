@@ -9,6 +9,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: auto !important;
 }
 
 html, 
@@ -20,6 +21,8 @@ body,
   min-height: 100%;
   background: transparent !important;
   overflow-y: auto !important;
+  min-height: 100vh;
+  position: relative;
 }
 
 .App {

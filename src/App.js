@@ -1330,12 +1330,15 @@ useEffect(() => {
         {/* Right Panel - Summary */}
         <div className="md:col-span-1">
           <div 
-            className="summary-card bg-gray-50 p-6 rounded-lg shadow-lg"
             style={{ 
               position: 'sticky',
               top: '20px',
               maxHeight: 'calc(100vh - 40px)',
-              overflowY: 'auto'
+              overflowY: 'auto',
+              backgroundColor: '#f9fafb',  // Light gray background
+              borderRadius: '0.5rem',
+              padding: '1.5rem',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
