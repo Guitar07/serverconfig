@@ -5,7 +5,7 @@ import './index.css';
 
 const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
-  
+
   useEffect(() => {
     const handleResize = () => {
       window.parent.postMessage(
@@ -733,10 +733,9 @@ const ServerConfigurator = () => {
 
       {/* Main Content - modify the container structure */}
       <div className="relative">
-      <div className="flex flex-col md:flex-row gap-8 main-content items-start">
-        {/* Left Panel - Configuration Form */}
-        <div className="md:w-2/3 relative">
-          <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">  {/* New grid container */}
+    <div className="md:col-span-2">  {/* Takes up 2 columns */}
+      <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
           <form onSubmit={handleSubmit}>
             {/* Chassis Selection */}
             {/* ...Include all your form fields as before... */}
@@ -1335,9 +1334,16 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:w-1/3 self start">
-  <div className="sticky top-4 bg-gray-50 p-6 rounded-lg shadow-lg">
-          
+        <div className="md:col-span-1">  {/* Takes up 1 column */}
+          <div 
+            className="bg-gray-50 p-6 rounded-lg shadow-lg"
+            style={{
+              position: 'sticky',
+              top: '1rem',
+              maxHeight: 'calc(100vh - 2rem)',
+              overflowY: 'auto'
+            }}
+          >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
             <div className="space-y-4">
               <div className="flex justify-between">
