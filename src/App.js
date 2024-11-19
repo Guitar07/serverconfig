@@ -1,42 +1,37 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Server, HardDrive, Cpu, Award } from 'lucide-react';
 import serverImage from './assets/images/server.png';
-import './index.css';
+
+
 
 const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
+  const [summaryDisplay, setSummaryDisplay] = useState('both');  // Add this line here
 
-  useEffect(() => {
-    const handleResize = () => {
-      window.parent.postMessage(
-        { height: document.documentElement.scrollHeight },
-        "https://www.serversource.co.uk/pages/R650xs"
-      );
-    };
 
-    // Initial height calculation
-    handleResize();
+const formatPrice = (price) => {
+  return `£${price.toLocaleString('en-GB', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
 
-    // Recalculate height on window resize
-    window.addEventListener("resize", handleResize);
-
-    // Add MutationObserver
-    const observer = new MutationObserver(handleResize);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Clean up
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      observer.disconnect();
-    };
-  }, []);
-
-  const formatPrice = (price) => {
-    return `£${price.toLocaleString('en-GB', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
+useEffect(() => {
+  const handleResize = () => {
+    const contentHeight = document.documentElement.scrollHeight;
+    window.parent.postMessage(
+      { height: contentHeight },
+      "*"  // Allow any origin for testing
+    );
   };
+
+  handleResize();
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
 
   // State to manage selected options
   const [selectedOptions, setSelectedOptions] = useState({
@@ -689,6 +684,18 @@ const ServerConfigurator = () => {
   // Render the component
   return (
     <div className="w-full">
+      {/* Add the toggle button right here, after the opening div */}
+      <button
+        onClick={() => {
+          if (summaryDisplay === 'both') setSummaryDisplay('fixed');
+          else if (summaryDisplay === 'fixed') setSummaryDisplay('floating');
+          else setSummaryDisplay('both');
+        }}
+        className="fixed top-4 right-4 bg-[#1881AE] text-white px-4 py-2 rounded-md z-50"
+      >
+        Switch View
+      </button>
+
       {/* Header and Images */}
       <div className="relative text-center mb-10">
         <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -1334,14 +1341,18 @@ const ServerConfigurator = () => {
         </div>
 
         {/* Right Panel - Summary */}
-        <div className="md:col-span-1">  {/* Takes up 1 column */}
+        {(summaryDisplay === 'both' || summaryDisplay === 'fixed') && (
+          <div className="md:col-span-1">
           <div 
-            className="bg-gray-50 p-6 rounded-lg shadow-lg"
-            style={{
+            style={{ 
               position: 'sticky',
-              top: '1rem',
-              maxHeight: 'calc(100vh - 2rem)',
-              overflowY: 'auto'
+              top: '20px',
+              maxHeight: 'calc(100vh - 40px)',
+              overflowY: 'auto',
+              backgroundColor: '#f9fafb',  // Light gray background
+              borderRadius: '0.5rem',
+              padding: '1.5rem',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
             }}
           >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
@@ -1625,21 +1636,125 @@ const ServerConfigurator = () => {
               <button
                 onClick={handleSubmit}
                 className="w-full py-3 rounded-md font-medium text-white transition-colors duration-300 bg-[#1881AE] hover:bg-[#157394]"
-              >
+                >
                 Add to Cart
               </button>
             </div>
           </div>
+          </div>
+          )}
+                         {/* Floating Summary Card */}
+        {(summaryDisplay === 'both' || summaryDisplay === 'floating') && (
+          <div className="fixed bottom-4 right-4 w-96 bg-white rounded-lg p-4 shadow-lg z-50">
+            <div className="max-h-[80vh] overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span>Base Price:</span>
+                  <span>{formatPrice(basePrice)}</span>
+                </div>
+                <div>
+                  <div className="flex justify-between">
+                    <span>Selected Options:</span>
+                    <span>{formatPrice(calculateSubtotal() - basePrice)}</span>
+                  </div>
+                  <div className="mt-1">
+                    <button
+                      onClick={() => setShowDetails(!showDetails)}
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      {showDetails ? 'Hide details' : 'Show details'}
+                    </button>
+                  </div>
+                  {showDetails && (
+                    <div className="mt-4 space-y-3 text-sm">
+                      {/* Display detailed selected options */}
+                      {/* Chassis */}
+                      {selectedOptions.chassis && (
+                        <div>
+                          <div className="font-medium">Chassis</div>
+                          <div className="text-gray-600">
+                            {chassisOptions.find((c) => c.id === selectedOptions.chassis)?.name}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bezel */}
+                      {selectedOptions.bezel !== 'no-bezel' && (
+                        <div>
+                          <div className="font-medium">Front Bezel</div>
+                          <div className="text-gray-600">
+                            {bezelOptions.find((b) => b.id === selectedOptions.bezel)?.name}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* TPM Module */}
+                      {selectedOptions.tpmModule !== 'no-tpm' && (
+                        <div>
+                          <div className="font-medium">TPM Module</div>
+                          <div className="text-gray-600">
+                            {tpmOptions.find((t) => t.id === selectedOptions.tpmModule)?.name}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Add other options as needed */}
+                    </div>
+                  )}
+                </div>
+                <div className="border-t pt-4 flex justify-between items-center">
+                  <label className="text-lg font-medium">Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-16 p-2 border rounded-md text-center"
+                  />
+                </div>
+                <div className="border-t pt-4">
+                  <div className="flex items-center">
+                    <span className="text-red-600 font-medium">*Est Lead time: 5-7 days</span>
+                  </div>
+                </div>
+                <div className="border-t pt-4">
+                  <div className="flex justify-between font-bold">
+                    <span>Subtotal (ex. VAT)</span>
+                    <span>{formatPrice(calculateSubtotal())}</span>
+                  </div>
+                </div>
+                <div className="border-t pt-4">
+                  <div className="flex justify-between font-medium">
+                    <span>VAT (20%)</span>
+                    <span>{formatPrice(calculateVAT(calculateSubtotal()))}</span>
+                  </div>
+                </div>
+                <div className="border-t pt-4">
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Total (inc. VAT)</span>
+                    <span>{formatPrice(calculateTotal(calculateSubtotal()))}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleSubmit}
+                  className="w-full py-2 mt-4 rounded-md font-medium text-white transition-colors duration-300 bg-[#1881AE] hover:bg-[#157394]"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         </div>
       </div>
-    </div>
     </div>
   );
 }
 
-
 const App = () => <ServerConfigurator />;
 export default App;
+
 
 
 

@@ -1,0 +1,168 @@
+.summary-card {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-content {
+    padding: 24px;
+}
+
+.system-section h3 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    color: #111827;
+}
+
+.base-price {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.selected-options {
+    margin-bottom: 24px;
+}
+
+.options-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.toggle-details {
+    color: #1881AE;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.details-section {
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.detail-label {
+    color: #6b7280;
+}
+
+.detail-value {
+    color: #111827;
+    text-align: right;
+    margin-left: 16px;
+}
+
+.quantity-section {
+    margin-bottom: 24px;
+}
+
+.quantity-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.quantity-input {
+    display: flex;
+    align-items: center;
+    max-width: 120px;
+}
+
+.quantity-input button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #d1d5db;
+    background: white;
+    cursor: pointer;
+}
+
+.quantity-input button:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.quantity-input button:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.quantity-input input {
+    width: 56px;
+    height: 32px;
+    border: 1px solid #d1d5db;
+    border-left: none;
+    border-right: none;
+    text-align: center;
+    font-size: 14px;
+}
+
+.lead-time {
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 24px;
+}
+
+.lead-time .asterisk {
+    color: #ef4444;
+    margin-right: 4px;
+}
+
+.price-breakdown {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+    margin-bottom: 24px;
+}
+
+.price-breakdown > div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.price-breakdown .total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.add-to-cart {
+    width: 100%;
+    padding: 12px;
+    background: #1881AE;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-to-cart:hover {
+    background: #156a8c;
+}
+
+@media (max-width: 1024px) {
+    .summary-card {
+        position: relative;
+        top: 0;
+    }
+}
