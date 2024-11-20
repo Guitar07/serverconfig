@@ -19,17 +19,32 @@ const formatPrice = (price) => {
 useEffect(() => {
   const handleResize = () => {
     const contentHeight = document.documentElement.scrollHeight;
+    const appContent = document.querySelector('.App');
+    const actualHeight = Math.max(contentHeight, appContent ? appContent.offsetHeight : 0);
+    
     window.parent.postMessage(
-      { height: contentHeight },
-      "*"  // Allow any origin for testing
+      { height: actualHeight },
+      "*"
     );
   };
 
   handleResize();
   window.addEventListener("resize", handleResize);
+  
+  // Watch for content changes
+  const observer = new MutationObserver(() => {
+    setTimeout(handleResize, 100);
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true
+  });
 
   return () => {
     window.removeEventListener("resize", handleResize);
+    observer.disconnect();
   };
 }, []);
 
