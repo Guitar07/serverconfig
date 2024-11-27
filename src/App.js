@@ -630,9 +630,9 @@ powerSupply: '600w',
 if (selectedOptions.powerSupply) {
   const psu = powerSupplyOptions.find((p) => p.id === selectedOptions.powerSupply);
   if (psu) {
-    // Add base price for first PSU
-    total += psu.basePrice;
-    // If two PSUs selected, add another full base price
+    // Add upgrade price for first PSU
+    total += psu.price;
+    // If two PSUs selected, add full base price for second PSU
     if (selectedOptions.powerSupplyCount === 2) {
       total += psu.basePrice;
     }
