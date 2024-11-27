@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Server, HardDrive, Cpu, Award } from 'lucide-react';
-import serverImage from './assets/images/server.png';
-
+const serverImage = window.SERVER_IMAGE_URL;
 
 
 const ServerConfigurator = () => {
   const [showDetails, setShowDetails] = useState(false);
-  const [summaryDisplay, setSummaryDisplay] = useState('both');  // Add this line here
+  
 
 
 const formatPrice = (price) => {
@@ -15,38 +14,6 @@ const formatPrice = (price) => {
     maximumFractionDigits: 2,
   })}`;
 };
-
-useEffect(() => {
-  const handleResize = () => {
-    const contentHeight = document.documentElement.scrollHeight;
-    const appContent = document.querySelector('.App');
-    const actualHeight = Math.max(contentHeight, appContent ? appContent.offsetHeight : 0);
-    
-    window.parent.postMessage(
-      { height: actualHeight },
-      "*"
-    );
-  };
-
-  handleResize();
-  window.addEventListener("resize", handleResize);
-  
-  // Watch for content changes
-  const observer = new MutationObserver(() => {
-    setTimeout(handleResize, 100);
-  });
-  
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true
-  });
-
-  return () => {
-    window.removeEventListener("resize", handleResize);
-    observer.disconnect();
-  };
-}, []);
 
   // State to manage selected options
   const [selectedOptions, setSelectedOptions] = useState({
@@ -65,7 +32,7 @@ useEffect(() => {
     ocp: 'none',
     pcie1: 'none',
     pcie2: 'none',
-    powerSupply: '',
+powerSupply: '600w',
     powerSupplyCount: 1,
     rackmountKit: 'none',
     windowsServer: 'none',
@@ -87,12 +54,12 @@ useEffect(() => {
 
   const bezelOptions = [
     { id: 'no-bezel', name: 'No Front Bezel Required', price: 0 },
-    { id: 'bezel', name: 'Add Front Bezel', price: 23 },
+    { id: 'bezel', name: 'Front Bezel', price: 23 },
   ];
 
   const tpmOptions = [
-    { id: 'no-tpm', name: 'No TPM Module Required', price: 0 },
-    { id: 'tpm', name: 'Add TPM Module', price: 32 },
+    { id: 'no-tpm', name: 'No Trusted Platform Module Required', price: 0 },
+    { id: 'tpm', name: 'Trusted Platform Module', price: 32 },
   ];
 
   const processors = [
@@ -135,7 +102,7 @@ useEffect(() => {
     { id: 'boss-480', name: 'Dell BOSS Controller with 2 x 480GB M.2. SATA SSD', price: 220.0 },
   ];
 
-  const systemDrives = {
+  const systemDrives = useMemo(() => ({
     '3.5inch': [
       { id: '1tb-sata-3.5', name: '1TB 7.2K, 3.5" SATA, 6G Hard Drive', price: 25.0 },
       { id: '2tb-sas-3.5', name: '2TB 7.2K, 3.5" SAS, 12G Hard Drive', price: 55.0 },
@@ -180,7 +147,7 @@ useEffect(() => {
       { id: '7.68tb-nvme', name: '7.68TB 2.5" NVMe, Gen4 SSD Drive', price: 695.0 },
       { id: '15.36tb-nvme', name: '15.36TB 2.5" NVMe, Gen4 SSD Drive', price: 1099.0 },
     ],
-  };
+  }), []);
 
   const idracOptions = [
     { id: 'express', name: 'iDRAC9, Express 15G', price: 0.0 },
@@ -194,124 +161,187 @@ useEffect(() => {
   ];
 
   const lanOptions = [
-    { id: 'broadcom5720', name: 'Broadcom 5720 Dual Port 1GbE Base-T (RJ45) NIC', price: 0.0 },
+    { id: 'broadcom5720', name: 'Broadcom 5720 Dual Port 1GbE BASE-T (RJ45) NIC', price: 0.0 },
   ];
 
   const ocpOptions = [
     { id: 'none', name: 'No OCP NIC', price: 0.0, category: 'none' },
-    // 1Gbps Base-T
+    // 1Gbps BASE-T
     {
       id: 'broadcom-5720-quad',
-      name: 'Broadcom 5720 1GbE Base-T (RJ45) Quad Port OCP 3.0 NIC',
+      name: 'Broadcom 5720 1GbE BASE-T (RJ45) Quad Port OCP 3.0 NIC',
       price: 90.0,
-      category: '1Gbps',
+      category: '1Gbps BASE-T',
     },
     {
       id: 'intel-i350-quad',
-      name: 'Intel i350 1GbE Base-T (RJ45) Quad Port OCP 3.0 NIC',
+      name: 'Intel i350 1GbE BASE-T (RJ45) Quad Port OCP 3.0 NIC',
       price: 90.0,
-      category: '1Gbps',
+      category: '1Gbps BASE-T',
     },
-    // 10Gbps Base-T
+    // 10Gbps BASE-T
     {
       id: 'broadcom-57416',
-      name: 'Broadcom 57416 10GbE Base-T (RJ45) Dual Port OCP 3.0 NIC',
+      name: 'Broadcom 57416 10GbE BASE-T (RJ45) Dual Port OCP 3.0 NIC',
       price: 160.0,
-      category: '10Gbps',
+      category: '10Gbps BASE-T',
     },
     {
       id: 'intel-x710-t2l',
-      name: 'Intel X710-T2L 10GbE Base-T (RJ45) Dual Port OCP 3.0 NIC',
+      name: 'Intel X710-T2L 10GbE BASE-T (RJ45) Dual Port OCP 3.0 NIC',
       price: 190.0,
-      category: '10Gbps',
+      category: '10Gbps BASE-T',
     },
     {
       id: 'intel-x710-t4',
-      name: 'Intel X710-T4 10GbE Base-T (RJ45) Quad Port OCP NIC',
+      name: 'Intel X710-T4 10GbE BASE-T (RJ45) Quad Port OCP NIC',
       price: 380.0,
-      category: '10Gbps',
+      category: '10Gbps BASE-T',
     },
     {
       id: 'broadcom-57454',
-      name: 'Broadcom 57454 10GbE Base-T (RJ45) Quad Port OCP 3.0 NIC',
+      name: 'Broadcom 57454 10GbE BASE-T (RJ45) Quad Port OCP 3.0 NIC',
       price: 380.0,
-      category: '10Gbps',
+      category: '10Gbps BASE-T',
     },
     // 10Gbps SFP+
     {
       id: 'broadcom-57412-sfp',
       name: 'Broadcom 57412 10Gb SFP+ Dual Port OCP 3.0 NIC',
       price: 120.0,
-      category: 'SFP+',
+      category: '10Gbps SFP+',
     },
     {
       id: 'marvell-41132',
       name: 'Marvell FastLinQ 10Gb SFP+ 41132 Dual Port OCP NIC',
       price: 245.0,
-      category: 'SFP+',
+      category: '10Gbps SFP+',
     },
     {
       id: 'intel-x710-da2',
       name: 'Intel X710-DA2 10GB SFP+ Dual Port OCP 3.0 NIC',
       price: 180.0,
-      category: 'SFP+',
+      category: '10Gbps SFP+',
     },
     {
       id: 'intel-x710-da4',
       name: 'Intel X710-DA4 10GB SFP+ Quad Port OCP 3.0 NIC',
       price: 360.0,
-      category: 'SFP+',
+      category: '10Gbps SFP+',
     },
     // 25Gbps SFP28
     {
       id: 'broadcom-57414',
       name: 'Broadcom 57414 25Gb SFP28 Dual Port OCP 3.0 NIC',
       price: 160.0,
-      category: 'SFP28',
+      category: '10/25Gbps SFP28',
     },
     {
       id: 'broadcom-57504',
       name: 'Broadcom 57504 25Gb SFP28 Quad Port OCP 3.0 NIC',
       price: 280.0,
-      category: 'SFP28',
+      category: '10/25Gbps SFP28',
     },
   ];
 
   const pcieSlotOptions = [
     { id: 'none', name: 'No Additional NIC', price: 0.0, category: 'none' },
-    // 1Gbps Base-T
+    
+    // 1Gbps BASE-T
     {
       id: 'broadcom-5719',
       name: 'Broadcom 5719 1Gb RJ45 Quad Port PCIe NIC',
       price: 35.0,
-      category: '1Gbps',
+      category: '1Gbps BASE-T',
     },
     {
       id: 'intel-i350-pcie',
       name: 'Intel i350 1Gb RJ45 Quad Port PCIe',
       price: 25.0,
-      category: '1Gbps',
+      category: '1Gbps BASE-T',
     },
-    // 10Gbps Base-T
+    
+    // 10Gbps BASE-T
     {
       id: 'broadcom-57416-pcie',
       name: 'Broadcom 57416 10Gb RJ45 Dual Port PCIe NIC',
       price: 145.0,
-      category: '10Gbps',
+      category: '10Gbps BASE-T',
     },
     {
       id: 'intel-x710-t2l-pcie',
       name: 'Intel X710-T2L 10Gb RJ45 Dual Port PCIe NIC',
       price: 170.0,
-      category: '10Gbps',
+      category: '10Gbps BASE-T',
     },
     {
       id: 'intel-x710-t4-pcie',
       name: 'Intel X710-T4 10Gb RJ45 Quad Port PCIe NIC',
       price: 395.0,
-      category: '10Gbps',
+      category: '10Gbps BASE-T',
     },
-    // Other options including HBA
+    
+    // 10Gbps SFP+
+    {
+      id: 'broadcom-57412-sfp',
+      name: 'Broadcom 57412 10Gb SFP+ Dual Port PCIe NIC',
+      price: 115.0,
+      category: '10Gbps SFP+',
+    },
+    {
+      id: 'intel-x710-da2',
+      name: 'Intel X710-DA2 10GB SFP+ Dual Port PCIe NIC',
+      price: 90.0,
+      category: '10Gbps SFP+',
+    },
+    {
+      id: 'intel-x710-da4',
+      name: 'Intel X710-DA4 10GB SFP+ Quad Port PCIe NIC',
+      price: 190.0,
+      category: '10Gbps SFP+',
+    },
+    {
+      id: 'marvell-41132',
+      name: 'Marvell FastLinQ 10Gb SFP+ 41132 Dual Port PCIe NIC',
+      price: 245.0,
+      category: '10Gbps SFP+',
+    },
+    
+    // 10/25Gbps SFP28
+    {
+      id: 'broadcom-57414-pcie',
+      name: 'Broadcom 57414 25Gb SFP28 Dual Port PCIe NIC',
+      price: 145.0,
+      category: '10/25Gbps SFP28',
+    },
+    {
+      id: 'intel-e810-xxv',
+      name: 'Intel E810-XXV 25Gb SFP28 Dual Port PCIe NIC',
+      price: 170.0,
+      category: '10/25Gbps SFP28',
+    },
+    {
+      id: 'nvidia-connectx6-25g',
+      name: 'NVidia ConnectX-6 25GB SFP28 Dual Port NIC',
+      price: 245.0,
+      category: '10/25Gbps SFP28',
+    },
+    
+    // 10/25/40/100Gbps SFP56
+    {
+      id: 'broadcom-57508',
+      name: 'Broadcom 57508 100Gb Dual Port QSFP56 PCIe NIC Profile',
+      price: 595.0,
+      category: '10/25/40/100Gbps SFP56',
+    },
+    {
+      id: 'nvidia-connectx6-100g',
+      name: 'NVidia ConnectX-6 100Gb QSFP56 Dual Port PCIe NIC',
+      price: 345.0,
+      category: '10/25/40/100Gbps SFP56',
+    },
+    
+    // HBA
     {
       id: 'dell-sas12e',
       name: 'Dell SAS12/E Direct Attached HBA',
@@ -345,15 +375,40 @@ useEffect(() => {
   ];
 
   const powerSupplyOptions = [
-    { id: '600w', name: 'Dell Platinum EPP RPSU 600W 100-240V (50/60Hz)', price: 140.0 },
-    { id: '800w', name: 'Dell Platinum EPP RPSU 800W 100-240V (50/60Hz)', price: 160.0 },
-    { id: '1400w', name: 'Dell Platinum EPP RPSU 1400W 100-240V (50/60Hz)', price: 200.0 },
-    { id: '1100w', name: 'Dell Titanium EPP RPSU 1100W 100-240V (50/60Hz)', price: 220.0 },
-    { id: '1800w', name: 'Dell Titanium ERP RPSU 1800W 200-240V (50/60Hz)', price: 240.0 },
+    { 
+      id: '600w', 
+      name: 'Dell Platinum EPP RPSU 600W 100-240V (50/60Hz)', 
+      price: 0.0,        // Included in base price
+      basePrice: 140.0   // Full price for second PSU
+    },
+    { 
+      id: '800w', 
+      name: 'Dell Platinum EPP RPSU 800W 100-240V (50/60Hz)', 
+      price: 20.0,       // Difference from 600W
+      basePrice: 160.0   // Full price for second PSU
+    },
+    { 
+      id: '1400w', 
+      name: 'Dell Platinum EPP RPSU 1400W 100-240V (50/60Hz)', 
+      price: 60.0,       // Difference from 600W
+      basePrice: 200.0   // Full price for second PSU
+    },
+    { 
+      id: '1100w', 
+      name: 'Dell Titanium EPP RPSU 1100W 100-240V (50/60Hz)', 
+      price: 80.0,       // Difference from 600W
+      basePrice: 220.0   // Full price for second PSU
+    },
+    { 
+      id: '1800w', 
+      name: 'Dell Titanium ERP RPSU 1800W 200-240V (50/60Hz)', 
+      price: 100.0,      // Difference from 600W
+      basePrice: 240.0   // Full price for second PSU
+    }
   ];
 
   const rackmountKitOptions = [
-    { id: 'none', name: 'No Rack kit', price: 0.0 },
+    { id: 'none', name: 'No Rackmount Kit', price: 0.0 },
     { id: 'b6', name: 'Dell B6 Sliding Rackmount Kit', price: 48.0 },
     { id: 'b6-cma', name: 'Dell B6 Sliding Rackmount Kit with Cable Management Arm', price: 96.0 },
   ];
@@ -366,24 +421,14 @@ useEffect(() => {
       price: 586.0,
       edition: 'standard',
     },
-    {
-      id: '2022-std-2',
-      name: 'Windows Server 2022 Standard, 2 Core License',
-      price: 74.0,
-      edition: 'standard',
-    },
+
     {
       id: '2019-std-16',
       name: 'Windows Server 2019 Standard, 16 Core License, 2VMs',
       price: 544.0,
       edition: 'standard',
     },
-    {
-      id: '2019-std-2',
-      name: 'Windows Server 2019 Standard, 2 Core License',
-      price: 68.0,
-      edition: 'standard',
-    },
+   
     // Datacenter Edition
     {
       id: '2022-dc-16',
@@ -433,7 +478,7 @@ useEffect(() => {
       case '4way-3.5':
         return {
           maxDrives: 4,
-          drives: [...systemDrives['3.5inch'], ...systemDrives['2.5inch']],
+          drives: systemDrives['3.5inch'],
         };
       case '8way-2.5':
         return {
@@ -451,7 +496,7 @@ useEffect(() => {
           drives: [],
         };
     }
-  }, []);
+  }, [systemDrives]);
 
   const getValidMemoryQuantities = (cpuCount) => {
     if (cpuCount === 1) {
@@ -581,11 +626,18 @@ useEffect(() => {
       total += selectedIdrac.price;
     }
   }
-    // Add power supply
-    if (selectedOptions.powerSupply) {
-      const psu = powerSupplyOptions.find((p) => p.id === selectedOptions.powerSupply);
-      if (psu) total += psu.price * selectedOptions.powerSupplyCount;
+// Add power supply
+if (selectedOptions.powerSupply) {
+  const psu = powerSupplyOptions.find((p) => p.id === selectedOptions.powerSupply);
+  if (psu) {
+    // Add base price for first PSU
+    total += psu.basePrice;
+    // If two PSUs selected, add another full base price
+    if (selectedOptions.powerSupplyCount === 2) {
+      total += psu.basePrice;
     }
+  }
+}
 
     // Add rackmount kit
     if (selectedOptions.rackmountKit !== 'none') {
@@ -686,44 +738,15 @@ useEffect(() => {
     setMaxDriveQuantities(newMaxQuantities);
   }, [selectedOptions.driveQuantities, selectedOptions.chassis, getAvailableDrives]);
 
-  // Function to calculate the VAT
-  const calculateVAT = (subtotal) => {
-    return subtotal * 0.2;
-  };
 
-  // Function to calculate the total including VAT
-  const calculateTotal = (subtotal) => {
-    return subtotal + calculateVAT(subtotal);
-  };
 
-  // Render the component
   return (
-    <div className="w-full">
-      {/* Add the toggle button right here, after the opening div */}
-      <button
-        onClick={() => {
-          if (summaryDisplay === 'both') setSummaryDisplay('fixed');
-          else if (summaryDisplay === 'fixed') setSummaryDisplay('floating');
-          else setSummaryDisplay('both');
-        }}
-        className="fixed top-4 right-4 bg-[#1881AE] text-white px-4 py-2 rounded-md z-50"
-      >
-        Switch View
-      </button>
-
-      {/* Header and Images */}
+    <div className="server-configurator-root w-full min-h-screen">
+      {/* Header */}
       <div className="relative text-center mb-10">
-        <div className="relative w-full h-64 bg-gradient-to-r from-blue-50 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
-          <img
-            src={serverImage}
-            alt="Dell R650XS Server"
-            className="w-4/5 h-auto object-contain mix-blend-multiply transition-transform duration-300 hover:scale-105"
-          />
-          <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-800 to-transparent text-white text-5xl font-normal text-center">
-            Dell PowerEdge R650XS 1U Rackmount Server
-          </div>
-        </div>
+        <h1 className="text-4xl font-semibold mb-4">Dell PowerEdge R650XS 1U Rackmount Server</h1>
       </div>
+      
 
       {/* Features */}
       <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
@@ -754,8 +777,7 @@ useEffect(() => {
       </div>
 
       {/* Main Content - modify the container structure */}
-      <div className="relative">
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">  {/* New grid container */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">  {/* New grid container */}
     <div className="md:col-span-2">  {/* Takes up 2 columns */}
       <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
           <form onSubmit={handleSubmit}>
@@ -763,7 +785,7 @@ useEffect(() => {
             {/* ...Include all your form fields as before... */}
             {/* Chassis Selection */}
             <div className="mb-8">
-              <label className="block text-lg font-medium mb-2">Chassis Configuration*</label>
+              <label className="block text-lg font-medium mb-2">Chassis Configuration</label>
               <select
                 className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
                   validationErrors.chassis ? 'border-2 border-red-500' : ''
@@ -802,7 +824,7 @@ useEffect(() => {
 
             {/* TPM Module */}
             <div className="mb-8">
-              <label className="block text-lg font-medium mb-2">TPM Module</label>
+              <label className="block text-lg font-medium mb-2">Trusted Platform Module 2.0 V3</label>
               <select
                 className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
                 value={selectedOptions.tpmModule}
@@ -943,80 +965,99 @@ useEffect(() => {
               </select>
             </div>
 
-            {/* System Drives */}
-            {selectedOptions.chassis !== 'diskless' && (
-              <div className="mb-8">
-                <label className="block text-lg font-medium mb-2">System Drives</label>
-                <div className="space-y-4">
-                  {getAvailableDrives(selectedOptions.chassis).drives.map((drive) => (
-                    <div key={drive.id} className="flex items-center gap-4">
-                      <div className="flex-grow">
-                        <label className="text-sm">{drive.name}</label>
-                      </div>
-                      <select
-                        className="w-24 p-2 rounded-md bg-gray-100"
-                        value={selectedOptions.driveQuantities[drive.id] || 0}
-                        onChange={(e) => {
-                          let quantity = parseInt(e.target.value);
-                          if (isNaN(quantity)) quantity = 0;
-
-                          const totalDrivesSelected = Object.entries(
-                            selectedOptions.driveQuantities
-                          )
-                            .filter(([id]) => id !== drive.id)
-                            .reduce((total, [, qty]) => total + qty, 0);
-
-                          const availableSlots =
-                            getAvailableDrives(selectedOptions.chassis).maxDrives -
-                            totalDrivesSelected;
-
-                          if (quantity > availableSlots) {
-                            quantity = availableSlots;
-                          }
-
-                          const newQuantities = {
-                            ...selectedOptions.driveQuantities,
-                            [drive.id]: quantity,
-                          };
-                          if (quantity === 0) {
-                            delete newQuantities[drive.id];
-                          }
-                          handleOptionChange('driveQuantities', newQuantities);
-                        }}
-                      >
-                        {Array.from(
-                          {
-                            length:
-                              Math.min(
-                                maxDriveQuantities[drive.id] || 0,
-                                getAvailableDrives(selectedOptions.chassis).maxDrives
-                              ) + 1,
-                          },
-                          (_, i) => i
-                        ).map((i) => (
-                          <option key={i} value={i}>
-                            {i}
-                          </option>
-                        ))}
-                      </select>
-                      <span className="w-32 text-right">{formatPrice(drive.price)}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-2 text-sm text-gray-600">
-                  Total Drives Selected:{' '}
-                  {Object.values(selectedOptions.driveQuantities).reduce((a, b) => a + b, 0)} /{' '}
-                  {getAvailableDrives(selectedOptions.chassis).maxDrives}
-                </div>
-                {validationErrors.drives && (
-                  <p className="mt-1 text-red-500 text-sm">{validationErrors.drives}</p>
-                )}
-              </div>
-            )}
+            <div className="mb-8">
+  <label className="block text-lg font-medium mb-2">System Drives</label>
+  {(!selectedOptions.chassis || selectedOptions.chassis === 'diskless') ? (
+    <select
+      className="w-full p-3 rounded-md bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
+      disabled={!selectedOptions.chassis || selectedOptions.chassis === 'diskless'}
+    >
+      <option>Select Drives</option>
+    </select>
+  ) : (
+    <div className="space-y-2">
+      {getAvailableDrives(selectedOptions.chassis).drives.map((drive) => (
+        <div key={drive.id} className="flex items-center gap-4 p-2 bg-gray-50 rounded-md">
+          <div className="flex-grow min-w-[300px]">
+            <span 
+              className="no-currency-convert text-sm text-gray-700" 
+              data-no-convert="true" 
+              translate="no"
+              style={{fontVariantNumeric: 'normal'}}
+              dangerouslySetInnerHTML={{
+                __html: `${drive.name} (+&#163;${drive.price.toLocaleString('en-GB', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })})`
+              }}
+            />
+          </div>
+          <div className="drive-quantity-container">
+            <label className="drive-quantity-label">QTY</label>
+            <select
+              className="drive-quantity-select"
+              value={selectedOptions.driveQuantities[drive.id] || 0}
+              onChange={(e) => {
+                let quantity = parseInt(e.target.value);
+                if (isNaN(quantity)) quantity = 0;
+                const totalDrivesSelected = Object.entries(
+                  selectedOptions.driveQuantities
+                )
+                  .filter(([id]) => id !== drive.id)
+                  .reduce((total, [, qty]) => total + qty, 0);
+                const availableSlots =
+                  getAvailableDrives(selectedOptions.chassis).maxDrives -
+                  totalDrivesSelected;
+                if (quantity > availableSlots) {
+                  quantity = availableSlots;
+                }
+                const newQuantities = {
+                  ...selectedOptions.driveQuantities,
+                  [drive.id]: quantity,
+                };
+                if (quantity === 0) {
+                  delete newQuantities[drive.id];
+                }
+                handleOptionChange('driveQuantities', newQuantities);
+              }}
+            >
+              {Array.from(
+                {
+                  length:
+                    Math.min(
+                      maxDriveQuantities[drive.id] || 0,
+                      getAvailableDrives(selectedOptions.chassis).maxDrives
+                    ) + 1,
+                },
+                (_, i) => i
+              ).map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="w-24 text-right text-gray-700 font-medium">
+            {formatPrice(drive.price)}
+          </div>
+        </div>
+      ))}
+      <div className="mt-3 pt-2 text-sm text-gray-600 border-t border-gray-200">
+        Total Drives Selected:{' '}
+        {Object.values(selectedOptions.driveQuantities).reduce((a, b) => a + b, 0)} /{' '}
+        {getAvailableDrives(selectedOptions.chassis).maxDrives}
+      </div>
+    </div>
+  )}
+  {validationErrors.drives && (
+    <p className="mt-1 text-red-500 text-sm">{validationErrors.drives}</p>
+  )}
+</div>
+            
 
             {/* iDRAC Configuration */}
             <div className="mb-8">
-              <label className="block text-lg font-medium mb-2">iDRAC Configuration*</label>
+              <label className="block text-lg font-medium mb-2">iDRAC Configuration</label>
               <select
                 className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors`}
                 value={selectedOptions.idrac}
@@ -1149,30 +1190,29 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Power Supply */}
-            <div className="mb-8">
-              <div className="flex gap-4">
-                <div className="flex-grow">
-                  <label className="block text-lg font-medium mb-2">Power Supply Options*</label>
-                  <select
-                    className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
-                      validationErrors.powerSupply ? 'border-2 border-red-500' : ''
-                    }`}
-                    value={selectedOptions.powerSupply}
-                    onChange={(e) => handleOptionChange('powerSupply', e.target.value)}
-                    required
-                  >
-                    <option value="">Select Power Supply</option>
-                    {powerSupplyOptions.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name} (+{formatPrice(option.price)})
-                      </option>
-                    ))}
-                  </select>
-                  {validationErrors.powerSupply && (
-                    <p className="mt-1 text-red-500 text-sm">{validationErrors.powerSupply}</p>
-                  )}
-                </div>
+{/* Power Supply */}
+<div className="mb-8">
+  <div className="flex gap-4">
+    <div className="flex-grow">
+      <label className="block text-lg font-medium mb-2">Redundant Power Supply Options</label>
+      <select
+        className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
+          validationErrors.powerSupply ? 'border-2 border-red-500' : ''
+        }`}
+        value={selectedOptions.powerSupply}
+        onChange={(e) => handleOptionChange('powerSupply', e.target.value)}
+        required
+      >
+        {powerSupplyOptions.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name} (+{formatPrice(option.basePrice)})
+          </option>
+        ))}
+      </select>
+      {validationErrors.powerSupply && (
+        <p className="mt-1 text-red-500 text-sm">{validationErrors.powerSupply}</p>
+      )}
+    </div>
                 <div className="w-24">
                   <label className="block text-lg font-medium mb-2">QTY 1-2</label>
                   <select
@@ -1260,80 +1300,97 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Windows CALs */}
-            <div className="mb-8">
-              <label className="block text-lg font-medium mb-2">
-                Windows Server Client Access Licenses
-              </label>
-              {selectedOptions.windowsCals.map((calEntry, index) => (
-                <div key={index} className="flex gap-4 mb-4">
-                  <div className="flex-grow">
-                    <select
-                      className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
-                      value={calEntry.calId}
-                      onChange={(e) => {
-                        const newWindowsCals = [...selectedOptions.windowsCals];
-                        newWindowsCals[index].calId = e.target.value;
-                        handleOptionChange('windowsCals', newWindowsCals);
-                      }}
-                    >
-                      <option value="">Select your CAL</option>
-                      {windowsCalOptions.map((option) => (
-                        <option key={option.id} value={option.id}>
-                          {option.name} (+{formatPrice(option.price)})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="w-24">
-                    <select
-                      className="w-full p-2 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors text-center"
-                      value={calEntry.quantity}
-                      onChange={(e) => {
-                        const newWindowsCals = [...selectedOptions.windowsCals];
-                        newWindowsCals[index].quantity = parseInt(e.target.value);
-                        handleOptionChange('windowsCals', newWindowsCals);
-                      }}
-                    >
-                      {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
-                        <option key={num} value={num}>
-                          {num}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <button
-                    type="button"
-                    className="text-red-500"
-                    onClick={() => {
-                      const newWindowsCals = selectedOptions.windowsCals.filter(
-                        (_, i) => i !== index
-                      );
-                      handleOptionChange('windowsCals', newWindowsCals);
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
+{/* Windows Server Client Access Licenses */}
+<div className="mb-8">
+  <label className="block text-lg font-medium mb-2">Windows Server Client Access Licenses</label>
+  {selectedOptions.windowsCals.length === 0 ? (
+    <select 
+      className="w-full h-[46px] p-3 rounded-md bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
+      onChange={(e) => {
+        if (e.target.value !== '') {
+          const newWindowsCals = [...selectedOptions.windowsCals, { calId: e.target.value, quantity: 1 }];
+          handleOptionChange('windowsCals', newWindowsCals);
+        }
+      }}
+      value=""
+    >
+      <option value="">Select Microsoft CAL</option>
+      {windowsCalOptions
+        .filter(cal => cal.id.startsWith('2022'))
+        .map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name} (+{formatPrice(option.price)})
+          </option>
+      ))}
+    </select>
+  ) : (
+    <div>
+      {selectedOptions.windowsCals.map((calEntry, index) => (
+        <div key={index} className="mb-2 flex gap-4">
+          <div className="flex-grow">
+            <select
+              className="w-full h-[46px] p-3 rounded-md bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
+              value={calEntry.calId}
+              onChange={(e) => {
+                const newWindowsCals = [...selectedOptions.windowsCals];
+                newWindowsCals[index].calId = e.target.value;
+                handleOptionChange('windowsCals', newWindowsCals);
+              }}
+            >
+              <option value="">Select Microsoft CAL</option>
+              {windowsCalOptions
+                .filter(cal => cal.id.startsWith('2022'))
+                .map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name} (+{formatPrice(option.price)})
+                  </option>
               ))}
-              <button
-                type="button"
-                className="text-blue-500 hover:underline"
-                onClick={() => {
-                  const newWindowsCals = [
-                    ...selectedOptions.windowsCals,
-                    { calId: '', quantity: 1 },
-                  ];
-                  handleOptionChange('windowsCals', newWindowsCals);
-                }}
-              >
-                Add CAL
-              </button>
-            </div>
+            </select>
+          </div>
+          <div className="w-24">
+            <select
+              className="w-full h-[46px] p-3 rounded-md bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1881AE] text-center"
+              value={calEntry.quantity}
+              onChange={(e) => {
+                const newWindowsCals = [...selectedOptions.windowsCals];
+                newWindowsCals[index].quantity = parseInt(e.target.value);
+                handleOptionChange('windowsCals', newWindowsCals);
+              }}
+            >
+              {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="button"
+            className="text-gray-500 hover:text-red-500"
+            onClick={() => {
+              const newWindowsCals = selectedOptions.windowsCals.filter((_, i) => i !== index);
+              handleOptionChange('windowsCals', newWindowsCals);
+            }}
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        className="mt-2 h-[46px] w-full text-left p-3 rounded-md bg-gray-100 border border-gray-200 text-gray-600 hover:text-gray-800"
+        onClick={() => {
+          const newWindowsCals = [...selectedOptions.windowsCals, { calId: '', quantity: 1 }];
+          handleOptionChange('windowsCals', newWindowsCals);
+        }}
+      >
+        + Additional CAL
+      </button>
+    </div>
+  )}
+</div>
 
             {/* Warranty Options */}
             <div className="mb-8">
-              <label className="block text-lg font-medium mb-2">System Warranty Options*</label>
+              <label className="block text-lg font-medium mb-2">System Warranty Options</label>
               <select
                 className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
                   validationErrors.warranty ? 'border-2 border-red-500' : ''
@@ -1355,21 +1412,22 @@ useEffect(() => {
           </form>
         </div>
 
-        {/* Right Panel - Summary */}
-        {(summaryDisplay === 'both' || summaryDisplay === 'fixed') && (
-          <div className="md:col-span-1">
-          <div 
-            style={{ 
-              position: 'sticky',
-              top: '20px',
-              maxHeight: 'calc(100vh - 40px)',
-              overflowY: 'auto',
-              backgroundColor: '#f9fafb',  // Light gray background
-              borderRadius: '0.5rem',
-              padding: '1.5rem',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-            }}
-          >
+       {/* Right Panel - Summary */}
+       <div className="md:col-span-1">
+         <div className="sticky top-4">
+           <div
+             className="summary-card overflow-y-auto"
+             style={{
+               backgroundColor: '#f9fafb',
+               borderRadius: '0.5rem',
+               padding: '1.5rem',
+               boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+               width: '100%',
+               maxWidth: '400px',
+               marginLeft: 'auto',
+               maxHeight: 'calc(100vh - 2rem)'
+             }}
+            >
             <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
             <div className="space-y-4">
               <div className="flex justify-between">
@@ -1627,144 +1685,28 @@ useEffect(() => {
               </div>
               <div className="border-t pt-4">
                 <div className="flex items-center">
-                  <span className="text-red-600 font-medium">*Est Lead time: 5-7 days</span>
-                </div>
-              </div>
-              <div className="border-t pt-4">
-                <div className="flex justify-between font-bold">
-                  <span>Subtotal (ex. VAT)</span>
-                  <span>{formatPrice(calculateSubtotal())}</span>
-                </div>
-              </div>
-              <div className="border-t pt-4">
-                <div className="flex justify-between font-medium">
-                  <span>VAT (20%)</span>
-                  <span>{formatPrice(calculateVAT(calculateSubtotal()))}</span>
+                  <span className="text-green-600 font-medium">*Est Lead time: 5-7 days</span>
                 </div>
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Total (inc. VAT)</span>
-                  <span>{formatPrice(calculateTotal(calculateSubtotal()))}</span>
+                <span>Total</span>
+                <span>{formatPrice(calculateSubtotal())}</span>
                 </div>
               </div>
               <button
                 onClick={handleSubmit}
-                className="w-full py-3 rounded-md font-medium text-white transition-colors duration-300 bg-[#1881AE] hover:bg-[#157394]"
-                >
+                className="w-full py-2 mt-4 rounded-md font-medium text-white transition-colors duration-300 bg-[#1881AE] hover:bg-[#157394]"
+              >
                 Add to Cart
               </button>
             </div>
           </div>
-          </div>
-          )}
-                         {/* Floating Summary Card */}
-        {(summaryDisplay === 'both' || summaryDisplay === 'floating') && (
-          <div className="fixed bottom-4 right-4 w-96 bg-white rounded-lg p-4 shadow-lg z-50">
-            <div className="max-h-[80vh] overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Your System</h2>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Base Price:</span>
-                  <span>{formatPrice(basePrice)}</span>
-                </div>
-                <div>
-                  <div className="flex justify-between">
-                    <span>Selected Options:</span>
-                    <span>{formatPrice(calculateSubtotal() - basePrice)}</span>
-                  </div>
-                  <div className="mt-1">
-                    <button
-                      onClick={() => setShowDetails(!showDetails)}
-                      className="text-blue-600 hover:underline text-sm"
-                    >
-                      {showDetails ? 'Hide details' : 'Show details'}
-                    </button>
-                  </div>
-                  {showDetails && (
-                    <div className="mt-4 space-y-3 text-sm">
-                      {/* Display detailed selected options */}
-                      {/* Chassis */}
-                      {selectedOptions.chassis && (
-                        <div>
-                          <div className="font-medium">Chassis</div>
-                          <div className="text-gray-600">
-                            {chassisOptions.find((c) => c.id === selectedOptions.chassis)?.name}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Bezel */}
-                      {selectedOptions.bezel !== 'no-bezel' && (
-                        <div>
-                          <div className="font-medium">Front Bezel</div>
-                          <div className="text-gray-600">
-                            {bezelOptions.find((b) => b.id === selectedOptions.bezel)?.name}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* TPM Module */}
-                      {selectedOptions.tpmModule !== 'no-tpm' && (
-                        <div>
-                          <div className="font-medium">TPM Module</div>
-                          <div className="text-gray-600">
-                            {tpmOptions.find((t) => t.id === selectedOptions.tpmModule)?.name}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Add other options as needed */}
-                    </div>
-                  )}
-                </div>
-                <div className="border-t pt-4 flex justify-between items-center">
-                  <label className="text-lg font-medium">Quantity</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-16 p-2 border rounded-md text-center"
-                  />
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex items-center">
-                    <span className="text-red-600 font-medium">*Est Lead time: 5-7 days</span>
-                  </div>
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex justify-between font-bold">
-                    <span>Subtotal (ex. VAT)</span>
-                    <span>{formatPrice(calculateSubtotal())}</span>
-                  </div>
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex justify-between font-medium">
-                    <span>VAT (20%)</span>
-                    <span>{formatPrice(calculateVAT(calculateSubtotal()))}</span>
-                  </div>
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total (inc. VAT)</span>
-                    <span>{formatPrice(calculateTotal(calculateSubtotal()))}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={handleSubmit}
-                  className="w-full py-2 mt-4 rounded-md font-medium text-white transition-colors duration-300 bg-[#1881AE] hover:bg-[#157394]"
-                >
-                  Add to Cart
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
         </div>
-      </div>
     </div>
-  );
+  </div>
+</div>
+);
 }
 
 const App = () => <ServerConfigurator />;
