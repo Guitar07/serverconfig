@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Server, HardDrive, Cpu, Award } from 'lucide-react';
-const serverImage = window.SERVER_IMAGE_URL;
+import A1L from './assets/images/A1L.png';
+
 
 
 const ServerConfigurator = () => {
@@ -472,6 +473,8 @@ powerSupply: '600w',
 
   const basePrice = 1500.0;
 
+
+
   // Wrap getAvailableDrives in useCallback
   const getAvailableDrives = useCallback((chassisType) => {
     switch (chassisType) {
@@ -555,6 +558,7 @@ powerSupply: '600w',
   const calculateSubtotal = () => {
     let total = basePrice;
 
+    
     // Add chassis components
     const bezel = bezelOptions.find((b) => b.id === selectedOptions.bezel);
     if (bezel) total += bezel.price;
@@ -670,9 +674,16 @@ if (selectedOptions.powerSupply) {
 
   // Wrap handleOptionChange in useCallback
   const handleOptionChange = useCallback((category, value) => {
-    setSelectedOptions((prev) => {
-      const newOptions = { ...prev, [category]: value };
+    // Clear the validation error for this category
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[category];
+      return newErrors;
+    });
 
+    setSelectedOptions((prev) => {
+      
+      const newOptions = { ...prev, [category]: value };
       // Handle special cases
       if (category === 'chassis') {
         // Reset drives when chassis changes
@@ -705,6 +716,41 @@ if (selectedOptions.powerSupply) {
       // Proceed with submission
       console.log('Configuration submitted:', selectedOptions);
       // Add your submission logic here
+    }
+  };
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    const errors = validateConfiguration();
+    setValidationErrors(errors);
+  
+    if (Object.keys(errors).length === 0) {
+      // Format the configuration data
+      const queryString = new URLSearchParams({
+        chassis: selectedOptions.chassis,
+        bezel: selectedOptions.bezel,
+        tpmModule: selectedOptions.tpmModule,
+        processor: `${selectedOptions.processor} x${selectedOptions.processorCount}`,
+        memory: `${selectedOptions.memory} x${selectedOptions.memoryCount}`,
+        raidController: selectedOptions.raidController,
+        bossController: selectedOptions.bossController,
+        drives: JSON.stringify(selectedOptions.driveQuantities),
+        idrac: selectedOptions.idrac,
+        lan: selectedOptions.lan,
+        ocp: selectedOptions.ocp,
+        pcie1: selectedOptions.pcie1,
+        pcie2: selectedOptions.pcie2,
+        powerSupply: `${selectedOptions.powerSupply} x${selectedOptions.powerSupplyCount}`,
+        rackmountKit: selectedOptions.rackmountKit,
+        windowsServer: `${selectedOptions.windowsServer} x${selectedOptions.windowsServerCount}`,
+        windowsCals: JSON.stringify(selectedOptions.windowsCals),
+        warranty: selectedOptions.warranty,
+        quantity: quantity,
+        totalPrice: calculateSubtotal()
+      }).toString();
+  
+      // Redirect to the order submission page
+      window.location.href = `https://www.serversource.co.uk/pages/order-submission?${queryString}`;
     }
   };
 
@@ -776,15 +822,17 @@ if (selectedOptions.powerSupply) {
         </div>
       </div>
 
+      
+
       {/* Main Content - modify the container structure */}
   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">  {/* New grid container */}
     <div className="md:col-span-2">  {/* Takes up 2 columns */}
-      <h2 className="text-xl font-bold mb-4 text-[#1881AE]">Customise Your Server</h2>
+      <h2 className="text-xl font-bold mb-12 text-[#1881AE]">Customise Your Server</h2>
           <form onSubmit={handleSubmit}>
             {/* Chassis Selection */}
             {/* ...Include all your form fields as before... */}
             {/* Chassis Selection */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">Chassis Configuration</label>
               <select
                 className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
@@ -807,7 +855,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* Bezel Option */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">Front Bezel</label>
               <select
                 className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -823,7 +871,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* TPM Module */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">Trusted Platform Module 2.0 V3</label>
               <select
                 className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -839,7 +887,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* Processor Selection */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <div className="flex gap-4">
                 <div className="flex-grow">
                   <label className="block text-lg font-medium mb-2">Processor Selection*</label>
@@ -879,7 +927,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* Memory Configuration */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <div className="flex gap-4">
                 <div className="flex-grow">
                   <label className="block text-lg font-medium mb-2">Memory Configuration*</label>
@@ -927,7 +975,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* RAID Controller */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">RAID Controller*</label>
               <select
                 className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
@@ -950,7 +998,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* BOSS Controller */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">BOSS Controller for O/S</label>
               <select
                 className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -965,7 +1013,7 @@ if (selectedOptions.powerSupply) {
               </select>
             </div>
 
-            <div className="mb-8">
+            <div className="configurator-section">
   <label className="block text-lg font-medium mb-2">System Drives</label>
   {(!selectedOptions.chassis || selectedOptions.chassis === 'diskless') ? (
     <select
@@ -1037,15 +1085,23 @@ if (selectedOptions.powerSupply) {
               ))}
             </select>
           </div>
-          <div className="w-24 text-right text-gray-700 font-medium">
-            {formatPrice(drive.price)}
-          </div>
+
         </div>
       ))}
-      <div className="mt-3 pt-2 text-sm text-gray-600 border-t border-gray-200">
-        Total Drives Selected:{' '}
-        {Object.values(selectedOptions.driveQuantities).reduce((a, b) => a + b, 0)} /{' '}
-        {getAvailableDrives(selectedOptions.chassis).maxDrives}
+      <div className="mt-3 pt-2 text-sm text-gray-600 border-t border-gray-200 flex justify-between items-center">
+        <div>
+          Total Drives Selected:{' '}
+          {Object.values(selectedOptions.driveQuantities).reduce((a, b) => a + b, 0)} /{' '}
+          {getAvailableDrives(selectedOptions.chassis).maxDrives}
+        </div>
+        {Object.keys(selectedOptions.driveQuantities).length > 0 && (
+          <button
+            onClick={() => handleOptionChange('driveQuantities', {})}
+            className="text-[#1881AE] hover:text-[#157394] font-medium"
+          >
+            Clear All Drives
+          </button>
+        )}
       </div>
     </div>
   )}
@@ -1056,7 +1112,7 @@ if (selectedOptions.powerSupply) {
             
 
             {/* iDRAC Configuration */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">iDRAC Configuration</label>
               <select
                 className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors`}
@@ -1073,11 +1129,11 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* Networking Section */}
-            <div className="mb-8">
-              <h3 className="text-lg font-bold mb-4">Networking Options</h3>
+            <div className="configurator-section">
+             
 
               {/* LAN on Motherboard */}
-              <div className="mb-4">
+              <div className="configurator-section">
                 <label className="block text-lg font-medium mb-2">LAN on Motherboard</label>
                 <select
                   className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -1093,7 +1149,7 @@ if (selectedOptions.powerSupply) {
               </div>
 
               {/* OCP 3.0 Network Options */}
-              <div className="mb-4">
+              <div className="configurator-section">
                 <label className="block text-lg font-medium mb-2">OCP 3.0 Network Options</label>
                 <select
                   className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -1122,7 +1178,7 @@ if (selectedOptions.powerSupply) {
               </div>
 
               {/* First PCIe Expansion Slot */}
-              <div className="mb-4">
+              <div className="configurator-section">
                 <label className="block text-lg font-medium mb-2">First PCIe Expansion Slot</label>
                 <select
                   className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -1161,7 +1217,7 @@ if (selectedOptions.powerSupply) {
               </div>
 
               {/* Second PCIe Expansion Slot */}
-              <div className="mb-4">
+              <div className="configurator-section">
                 <label className="block text-lg font-medium mb-2">Second PCIe Expansion Slot</label>
                 <select
                   className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -1191,7 +1247,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
 {/* Power Supply */}
-<div className="mb-8">
+<div className="configurator-section">
   <div className="flex gap-4">
     <div className="flex-grow">
       <label className="block text-lg font-medium mb-2">Redundant Power Supply Options</label>
@@ -1233,7 +1289,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* Rackmount Kit */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">Rackmount Kit</label>
               <select
                 className="w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors"
@@ -1249,7 +1305,7 @@ if (selectedOptions.powerSupply) {
             </div>
 
             {/* Windows Server Options */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <div className="flex gap-4">
                 <div className="flex-grow">
                   <label className="block text-lg font-medium mb-2">
@@ -1301,7 +1357,8 @@ if (selectedOptions.powerSupply) {
             </div>
 
 {/* Windows Server Client Access Licenses */}
-<div className="mb-8">
+<div className="configurator-section">
+
   <label className="block text-lg font-medium mb-2">Windows Server Client Access Licenses</label>
   {selectedOptions.windowsCals.length === 0 ? (
     <select 
@@ -1389,7 +1446,7 @@ if (selectedOptions.powerSupply) {
 </div>
 
             {/* Warranty Options */}
-            <div className="mb-8">
+            <div className="configurator-section">
               <label className="block text-lg font-medium mb-2">System Warranty Options</label>
               <select
                 className={`w-full p-3 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1881AE] focus:border-[#1881AE] transition-colors ${
@@ -1412,10 +1469,14 @@ if (selectedOptions.powerSupply) {
           </form>
         </div>
 
+        
+        
+
        {/* Right Panel - Summary */}
        <div className="md:col-span-1">
          <div className="sticky top-4">
            <div
+             id="your-system-summary"
              className="summary-card overflow-y-auto"
              style={{
                backgroundColor: '#f9fafb',
@@ -1695,10 +1756,10 @@ if (selectedOptions.powerSupply) {
                 </div>
               </div>
               <button
-                onClick={handleSubmit}
+                onClick={handleAddToCart}
                 className="w-full py-2 mt-4 rounded-md font-medium text-white transition-colors duration-300 bg-[#1881AE] hover:bg-[#157394]"
               >
-                Add to Cart
+                Submit Configuration
               </button>
             </div>
           </div>
@@ -1711,17 +1772,6 @@ if (selectedOptions.powerSupply) {
 
 const App = () => <ServerConfigurator />;
 export default App;
-
-
-
-
-
-
-
-
-
-
-
 
 
 
